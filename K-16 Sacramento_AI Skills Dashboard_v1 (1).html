@@ -1,124 +1,14 @@
 <!DOCTYPE html>
-<!--
-================================================================================
-  K-16 · SACRAMENTO AI SKILLS — HEALTHCARE & ALLIED HEALTH SECTOR
-  AI Workforce Intelligence Dashboard
-  Sacramento K-16 Collaborative · Feb 2026
-
-  VERSION: v13  |  Skills: 1,200  |  Roles: 12
-  Hosted as a single self-contained HTML file.
-  For Squarespace: host on GitHub Pages / Netlify, embed via <iframe>.
-
-  ── QUICK EDITOR GUIDE ────────────────────────────────────────────────────────
-
-  COLOURS (CSS variables, line ~30):
-    --dark:    #214144   (dark teal — headers, nav)
-    --teal:    #22BEB7   (primary accent)
-    --lime:    #CADC71   (secondary accent)
-    --orange:  #DF6436   (highlight / automation)
-    --lavender:#8294EB   (compare / KPI accent)
-    EXPOSURE BANDS: #a8d5a2 Minimal · #f5d76e Moderate · #f0a868 Elevated · #e87070 Significant
-
-  FONTS:
-    Poppins loaded from Google Fonts (requires internet connection).
-
-  ── SECTION STRUCTURE ─────────────────────────────────────────────────────────
-    Section 01 — Impact Landscape       id="sec0"   JS: renderILCards()
-    Section 02 — Role Transformation    id="sec1"   JS: renderSec2() / renderAll()
-    Section 03 — Skill Explorer         id="sec2"   JS: renderTable()
-    Section 04 — Skill Category Trans.  id="sec3"   JS: renderSec4()
-    Section 05 — Sacramento Overview    id="sec4"   JS: renderSec5()
-
-  ── DATA LOCATIONS ────────────────────────────────────────────────────────────
-    SKILL DATA:       const RAW = [...]        ~line 1125  (1,200 rows)
-    ROLE LMI DATA:    const IL_ROLES = {...}   ~line 1100  (12 roles, scores, ARS)
-    SECTION 5 DATA:   // ╔══════════════════════════════════════════════════════════════════════════╗
-// ║  ✏️  SACRAMENTO OVERVIEW DATA — Labour Market Intelligence               ║
-// ║                                                                          ║
-// ║  This section contains the real-world LMI data shown in Section 05.    ║
-// ║  Source: Lightcast, Feb 2026.                                            ║
-// ║                                                                          ║
-// ║  For each role you can update:                                           ║
-// ║    sacSalary        → Sacramento average annual salary (number)         ║
-// ║    sacSalaryRange   → Salary range shown on chart e.g. "$112K–$152K"   ║
-// ║    employment       → Current employment count in Sacramento            ║
-// ║    natBenchmark     → National benchmark employment                      ║
-// ║    postings         → Job postings in last 12 months                    ║
-// ║    demandGap        → Difference as string e.g. "+257"                  ║
-// ║    sacGrowth        → Sacramento projected growth % (number)            ║
-// ║    natGrowth        → National projected growth % (number)              ║
-// ║    employers[]      → Top employers: {n:"Name", c:postingCount}         ║
-// ║    industries[]     → Industry split: {n:"Name", p:percent, col:"hex"} ║
-// ║    feeders[]        → Feeder roles: {n:"Name", r:%, t:"Type", w:"$"}   ║
-// ║    nexts[]          → Next roles:   {n:"Name", r:%, t:"Type", w:"$"}   ║
-// ║    aiGap{}          → AI education gap assessment                        ║
-// ║      programList[]  → Local programs:                                   ║
-// ║        {school, degree, credential, grads}                              ║
-// ║                                                                          ║
-// ║  Simply find the role key (e.g. "radiology":) and update the values.   ║
-// ╚══════════════════════════════════════════════════════════════════════════╝
-// SECTION 5 — SACRAMENTO OVERVIEW DATA
-// LMI data per role: salary, employment, postings, growth,
-// employers, industries, career pathways, AI education gap.
-// Update each role's data object to refresh LMI figures.
-// ─────────────────────────────────────────────────────────
-const S5_DATA = {...}    ~line 3378  (LMI, employers, programs)
-    ADOPTION FACTORS: // ─────────────────────────────────────────────────────────────────────────────
-// ✏️  ADOPTION FACTORS — How fast AI spreads in each scenario
-//    Numbers go from 0 (no adoption) to 1 (full adoption).
-//    Edit these if you want to adjust the growth curves.
-//    Rows = Cautious / Measured / Accelerated
-//    Columns = Year 2025 through 2030
-// ─────────────────────────────────────────────────────────────────────────────
-const ADOPTION = {...}   ~line 1085  (year × scenario matrix)
-
-  ── SKILL DATA FORMAT ─────────────────────────────────────────────────────────
-    Each row: [role, category, skill, importance(1-5), automation(0-3),
-               augmentation(0-3), displacement(0-3), growth%, market]
-    Categories: Clinical/Technical | Technology | Administrative |
-                Human/ Soft Skills | AI Skill
-
-  ── TOUR & INFO ICONS ─────────────────────────────────────────────────────────
-    Guided tours:  startTour() · startS2Tour() · startS3Tour() · startS4Tour() · startS5Tour()
-    Info popovers: showInfoPop() · showCmpInfo() · showS2Info() · showS3Info() · showS4Info() · showS5Info()
-    Tour steps:    TOUR_STEPS · S2_TOUR_STEPS · S3_TOUR_STEPS · S4_TOUR_STEPS · S5_TOUR_STEPS
-    Info content:  CMP_INFO · S2_INFO · S3_INFO · S4_INFO · S5_INFO
-
-  ── SQUARESPACE EMBEDDING ─────────────────────────────────────────────────────
-    1. Upload this file to GitHub Pages or Netlify as index.html
-    2. In Squarespace: Add a Code Block and paste:
-       <iframe src="YOUR_HOSTED_URL" width="100%" height="900px"
-               frameborder="0" style="border:none;"></iframe>
-    3. Business plan or higher required for Code Blocks.
-
-================================================================================
--->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- ✏️ EDIT: Browser tab title -->
 <title>Sacramento AI Skills — Healthcare &amp; Allied Health Sector</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-/* ══════════════════════════════════════════════════════════════════════════
-   ✏️ EDIT: DASHBOARD COLOURS
-   Change any hex colour value below (the #XXXXXX codes) to retheme.
-   Tip: Google "colour picker" to find hex codes for any colour.
-
-   --dark      = nav bar and dark headers
-   --teal      = main accent colour (buttons, highlights)
-   --lime      = secondary accent (growth charts, tour button)
-   --orange    = automation colour
-   --lavender  = KPI cards and compare panels
-   --cream     = page background colour
-
-   EXPOSURE BAND COLOURS (role cards and skill category cards):
-   Edit the 4 values that say "Minimal / Moderate / Elevated / Significant"
-   ══════════════════════════════════════════════════════════════════════════ */
 :root{
   --cream:#F9F5EF;--dark:#214144;--teal:#22BEB7;--lime:#CADC71;
   --lavender:#8294EB;--orange:#DF6436;--lteal:#9CE5DE;
@@ -297,8 +187,6 @@ thead th:hover{background:#2d5558}
 <body>
 
 <nav id="topnav">
-  <!-- ✏️ EDIT: Nav bar title (top left of dashboard) -->
-<!-- Change the text between the tags below -->
   <div class="nav-logo">K-16 · Sacramento AI Skills — Healthcare</div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection(0)">01 Impact Landscape</button>
@@ -1185,11 +1073,9 @@ thead th:hover{background:#2d5558}
   <div id="s5-content"></div>
 </div>
 
-<!-- ✏️ EDIT: Footer text at bottom of page -->
 <div class="footer-strip">Sacramento K-16 Collaborative · Healthcare &amp; Allied Health Sector · AI Workforce Intelligence Dashboard · 1,200 Skills · 12 Roles</div>
 
 <script>
-
 // ════════════════════════════════════════════════════
 // IMPACT LANDSCAPE DATA — verified scores from 1,200 skills
 // ════════════════════════════════════════════════════
@@ -1440,31 +1326,6 @@ function setILCat(cat,btn){
 // ════════════════════════════════════════════════════
 // SKILLS DATA (subset for sections 2–4 — full scoring from IL data)
 // ════════════════════════════════════════════════════
-// ╔══════════════════════════════════════════════════════════════════════════╗
-// ║  ✏️  SKILL DATA — 1,200 rows                                             ║
-// ║                                                                          ║
-// ║  Each line is one skill for one role.                                    ║
-// ║  Format: ["Role", "Category", "Skill Name",                             ║
-// ║           importance(1-5), automation(0-3),                             ║
-// ║           augmentation(0-3), displacement(0-3),                         ║
-// ║           "growth%", "market trend"]                                    ║
-// ║                                                                          ║
-// ║  IMPORTANCE:    1=Peripheral  2=Supplementary  3=Moderate               ║
-// ║                 4=Important   5=Critical                                 ║
-// ║  AUTOMATION /                                                            ║
-// ║  AUGMENTATION /                                                          ║
-// ║  DISPLACEMENT:  0=None  1=Low  2=Moderate  3=High                       ║
-// ║  MARKET TREND:  "Rapidly Growing" / "Growing" / "Stable" /              ║
-// ║                 "Lagging" / "Insf. Data"                                ║
-// ║                                                                          ║
-// ║  To add a skill: copy any existing line, paste below it, edit values.   ║
-// ║  To edit a skill: find it by role + skill name, change the numbers.     ║
-// ║  To delete a skill: delete the whole line (including the comma).        ║
-// ╚══════════════════════════════════════════════════════════════════════════╝
-// SKILL DATA — 1,200 rows: [role, category, skill, imp(1-5),
-//   auto(0-3), aug(0-3), disp(0-3), growth%, market]
-// To add/edit skills: follow the same array format below.
-// ─────────────────────────────────────────────────────────
 const RAW=[
 ["Medical Assistant","Technology","Screen Reader",2,1,1,0,"9.9%","Growing"],
 ["Medical Assistant","Technology","Web Accessibility Standards",2,1,1,0,"10.5%","Growing"],
@@ -3518,300 +3379,192 @@ function renderSec4(){
 const S5_DATA = {
   'radiology': {
     label:'Radiology Technicians',
-    sacSalary:132229, sacSalaryRange:'$112,395–$152,063',natSalary:77667,
+    sacSalary:132000, sacSalaryRange:'$112K–$152K', natSalary:77667,
     employment:899, natBenchmark:1062, postings:1156, demandGap:'+257',
     sacGrowth:8.3, natGrowth:6.5,
     employers:[{n:'CommonSpirit Health',c:60},{n:'Sutter Health',c:48},{n:'University of California',c:47},{n:'Vetted Health',c:35},{n:'AMN Healthcare',c:34}],
     industries:[{n:'General Medical & Surgical Hospitals',p:35.8,col:'#22BEB7'},{n:'Outpatient Care Centers',p:23.9,col:'#8294EB'},{n:'Education & Hospitals (State)',p:15.2,col:'#CADC71'},{n:'Offices of Physicians',p:11.2,col:'#DF6436'},{n:'Medical & Diagnostic Labs',p:5.5,col:'#9CE5DE'},{n:'Employment Services',p:2.0,col:'#E7B89F'},{n:'Other',p:6.5,col:'#BAC3FF'}],
-    feeders:[{n:'Cardiovascular Technologists & Technicians',r:79,t:'Similar',w:'-$145'},{n:'Nuclear Technicians',r:75,t:'Lateral',w:'-$139'},{n:'Diagnostic Medical Sonographers',r:69,t:'Similar',w:'+$4,016'},{n:'Surgical Assistants',r:55,t:'Lateral Adv.',w:'-$38,391'},{n:'Veterinary Technologists & Technicians',r:48,t:'Advancement',w:'-$60,215'}],
+    feeders:[{n:'Cardiovascular Technologists',r:79,t:'Similar',w:'-$145'},{n:'Nuclear Technicians',r:75,t:'Lateral',w:'-$139'},{n:'Diagnostic Medical Sonographers',r:69,t:'Similar',w:'+$4,016'},{n:'Surgical Assistants',r:55,t:'Lateral Adv.',w:'-$38,391'},{n:'Veterinary Technologists',r:48,t:'Advancement',w:'-$60,215'}],
     nexts:[{n:'Radiologists',r:88,t:'Lateral Adv.',w:'+$58,892'},{n:'MRI Technologists',r:85,t:'Advancement',w:'+$13,218'},{n:'Nuclear Medicine Technologists',r:80,t:'Advancement',w:'+$15,107'},{n:'Radiation Therapists',r:77,t:'Lateral Adv.',w:'+$14,234'},{n:'Medical Dosimetrists',r:41,t:'Advancement',w:'+$37,965'}],
-    aiGap:{fluency:'None to Low',fluencyNote:'PACS and digital imaging systems covered; AI-assisted image analysis, automated abnormality detection, and AI diagnostic support tools not taught. Students may access AI/ML courses through a separate FLC AI certificate program (separate enrolment required).',maturity:'Applied',maturityNote:'Radiologic Technology programs cover PACS, digital radiography, CR/DR systems, dose optimisation, and quality assurance. No courses specifically address AI-assisted imaging, AI diagnostics, machine learning, or structured human-in-the-loop imaging oversight. Radiological Society of North America (RSNA) AI guidance available to professionals as continuing education.',
-      completionsSummary:'In 2024, 4 schools in Sacramento County produced 59 completions across 2 occupational programs relevant to Radiologic Technologists.',
-      completionsDetail:[
-        {program:'Diagnostic Medical Sonography / Sonographer and Ultrasound Technician (Certificate / Associate\'s)',count:34},
-        {program:'Radiologic Technology/Science – Radiographer (Associate\'s)',count:25}
-      ],
+    aiGap:{fluency:'None to Low',fluencyNote:'Digital imaging and PACS operation taught; AI-assisted image interpretation and diagnostic AI not in curriculum',maturity:'Applied',maturityNote:'PACS, digital radiography, and CR/DR systems covered; AI anomaly detection and automated reporting tools not yet taught',
       programList:[
-        {school:'Sacramento Ultrasound Institute',degree:'Diagnostic Medical Sonography Certificate',credential:'State-approved',grads:'31 (2024)',credType:'Certificate',gradNum:31},
-        {school:'Yuba College',degree:'Radiologic Technology A.S.',credential:'JRCERT-accredited',grads:'23 (2024)',credType:"Associate's",gradNum:23},
-        {school:'Cosumnes River College',degree:'Radiologic Technology A.S.',credential:'JRCERT-accredited',grads:'3 (2024)',credType:"Associate's",gradNum:3},
-        {school:'Folsom Lake College',degree:'Radiologic Technology A.S.',credential:'JRCERT-accredited',grads:'2 (2024)',credType:"Associate's",gradNum:2}
+        {school:'Folsom Lake College',degree:'Radiologic Technology A.S. Degree',credential:'JRCERT-accredited',grads:'~25/yr'}
       ]}
   },
   'rn': {
     label:'Registered Nurses',
-    sacSalary:171494, sacSalaryRange:'$145,770–$197,218', natSalary:93600,
-    employment:17656, natBenchmark:15713, postings:8386, demandGap:'+1,943',
-    sacGrowth:7.2, natGrowth:6.9,
-    employers:[{n:'CommonSpirit Health',c:314},{n:'UC Davis Health',c:295},{n:'Sutter Health',c:214},{n:'AMN Healthcare',c:179},{n:'Stability Healthcare',c:166}],
-    industries:[{n:'General Medical & Surgical Hospitals',p:29.6,col:'#22BEB7'},{n:'Education & Hospitals (State Govt)',p:17.7,col:'#8294EB'},{n:'Outpatient Care Centers',p:14.0,col:'#CADC71'},{n:'State Government (excl. Ed & Hospitals)',p:9.2,col:'#DF6436'},{n:'Home Health Care Services',p:4.7,col:'#9CE5DE'},{n:'Offices of Physicians',p:3.9,col:'#E7B89F'},{n:'Other',p:21.0,col:'#BAC3FF'}],
-    feeders:[{n:'Licensed Practical & Vocational Nurses',r:82,t:'Lateral Adv.',w:'-$36,688'},{n:'Nursing Assistants',r:76,t:'Lateral Adv.',w:'-$58,949'},{n:'Orderlies',r:72,t:'Lateral Adv.',w:'-$62,335'},{n:'Psychiatric Technicians',r:60,t:'Lateral Adv.',w:'-$58,354'},{n:'Paramedics',r:60,t:'Lateral Adv.',w:'-$38,109'}],
-    nexts:[{n:'Medical & Health Services Managers',r:78,t:'Lateral',w:'+$2,474'},{n:'Radiation Therapists',r:43,t:'Advancement',w:'+$19,941'},{n:'MRI Technologists',r:41,t:'Lateral Adv.',w:'+$18,925'},{n:'Nuclear Medicine Technologists',r:34,t:'Lateral Adv.',w:'+$20,814'},{n:'Medical Dosimetrists',r:26,t:'Lateral Adv.',w:'+$43,672'}],
-    aiGap:{fluency:'None to Low',fluencyNote:'EHR (Epic), telehealth platforms, and clinical documentation covered across ADN programs at SCC, ARC, and Carrington. No required courses covering AI, machine learning, clinical AI systems, or AI-driven diagnostics in any local ADN nursing program. Students may access general AI/data science courses as electives at SCC and ARC outside the structured nursing pathway.',maturity:'Foundational',maturityNote:'EMR integration, clinical decision-support tools, and patient monitoring technologies covered. AI-driven early-warning systems, NLP documentation scribes, predictive analytics, and algorithmic care tools not integrated into clinical rotations at any Sacramento ADN program. Limited even at BSN level. External AI upskilling available through Johns Hopkins, Stanford, and MIT digital health programs. ANCC nursing informatics and HIMSS digital health certifications available.',
-      completionsSummary:'In 2024, 6 schools in the Sacramento region produced 557 completions across 1 occupational program relevant to Registered Nurses.',
-      completionsDetail:[
-        {program:"Registered Nursing/Registered Nurse — Associate's",count:312},
-        {program:"Registered Nursing/Registered Nurse — Bachelor's",count:212},
-        {program:"Registered Nursing/Registered Nurse — Master's",count:33}
-      ],
+    sacSalary:143000, sacSalaryRange:'$118K–$168K', natSalary:86000,
+    employment:12400, natBenchmark:10200, postings:4800, demandGap:'+2,200',
+    sacGrowth:9.1, natGrowth:7.2,
+    employers:[{n:'Sutter Health',c:320},{n:'UC Davis Health',c:280},{n:'CommonSpirit Health',c:215},{n:'Kaiser Permanente',c:198},{n:'Dignity Health',c:175}],
+    industries:[{n:'General Medical & Surgical Hospitals',p:58.2,col:'#22BEB7'},{n:'Outpatient Care Centers',p:14.1,col:'#8294EB'},{n:'Physician Offices',p:9.4,col:'#CADC71'},{n:'Home Health Services',p:7.2,col:'#DF6436'},{n:'Nursing Care Facilities',p:5.8,col:'#9CE5DE'},{n:'Other',p:5.3,col:'#BAC3FF'}],
+    feeders:[{n:'Licensed Practical Nurses',r:82,t:'Advancement',w:'+$28,000'},{n:'Medical Assistants',r:68,t:'Advancement',w:'+$42,000'},{n:'Patient Care Technicians',r:61,t:'Advancement',w:'+$55,000'},{n:'EMT / Paramedics',r:52,t:'Lateral',w:'+$18,000'},{n:'Phlebotomists',r:44,t:'Advancement',w:'+$60,000'}],
+    nexts:[{n:'Nurse Practitioners',r:88,t:'Advancement',w:'+$52,000'},{n:'Clinical Nurse Specialists',r:80,t:'Advancement',w:'+$38,000'},{n:'Nurse Managers',r:75,t:'Advancement',w:'+$24,000'},{n:'Physician Assistants',r:62,t:'Lateral Adv.',w:'+$68,000'},{n:'Healthcare Administrators',r:48,t:'Advancement',w:'+$20,000'}],
+    aiGap:{fluency:'Low to Moderate',fluencyNote:'EHR documentation and telehealth covered; AI clinical decision support and predictive monitoring emerging but not yet standard',maturity:'Foundational',maturityNote:'Epic EHR and telehealth platforms covered; AI documentation scribes and early-warning AI tools not yet integrated into clinical rotations',
       programList:[
-        {school:"California State University–Sacramento",degree:"B.S.N. (212) + M.S.N. (33)",credential:'CCNE-accredited',grads:'245 (2024)',credType:'Mixed',gradNum:245,bachNum:212,masterNum:33},
-        {school:'American River College',degree:"Associate Degree in Nursing (A.D.N.)",credential:'ACEN-accredited',grads:'81 (2024)',credType:"Associate's",gradNum:81},
-        {school:'Yuba College',degree:"Associate Degree in Nursing (A.D.N.)",credential:'ACEN-accredited',grads:'72 (2024)',credType:"Associate's",gradNum:72},
-        {school:'Carrington College–Sacramento',degree:"Associate Degree in Nursing (A.D.N.)",credential:'ACEN-accredited',grads:'69 (2024)',credType:"Associate's",gradNum:69},
-        {school:'Sacramento City College',degree:"Associate Degree in Nursing (A.D.N.)",credential:'ACEN-accredited',grads:'51 (2024)',credType:"Associate's",gradNum:51},
-        {school:'Sierra College',degree:"Associate Degree in Nursing (A.D.N.)",credential:'ACEN-accredited',grads:'39 (2024)',credType:"Associate's",gradNum:39}
+        {school:'Sacramento City College',degree:'Associate Degree in Nursing (A.D.N.)',credential:'ACEN-accredited',grads:'~85/yr'},
+        {school:'American River College',degree:'Associate Degree in Nursing (A.D.N.)',credential:'ACEN-accredited',grads:'~80/yr'},
+        {school:'Folsom Lake College',degree:'Associate Degree in Nursing (A.D.N.)',credential:'ACEN-accredited',grads:'~60/yr'},
+        {school:'CSU Sacramento',degree:'Bachelor of Science in Nursing (B.S.N.)',credential:'CCNE-accredited',grads:'~120/yr'},
+        {school:'University of the Pacific',degree:'B.S.N. / M.S.N.',credential:'CCNE-accredited',grads:'~45/yr'},
+        {school:'WGU California',degree:'B.S.N. (online — Sacramento region)',credential:'CCNE-accredited',grads:'~100/yr'}
       ]}
   },
   'lpn': {
     label:'LPN / LVN',
-    sacSalary:79254, sacSalaryRange:'$67,366–$91,142', natSalary:62338,
-    employment:3294, natBenchmark:3061, postings:511, demandGap:'+233',
-    sacGrowth:9.7, natGrowth:5.5,
-    employers:[{n:'Ro Health',c:20},{n:'FullShift Staffing',c:15},{n:'Soliant Health',c:14},{n:'Good Samaritan',c:13},{n:'Redwood Family Care Network',c:11}],
-    industries:[{n:'Nursing Care Facilities',p:20.2,col:'#22BEB7'},{n:'State Government (excl. Ed & Hospitals)',p:15.4,col:'#8294EB'},{n:'Outpatient Care Centers',p:12.7,col:'#CADC71'},{n:'Home Health Care Services',p:9.1,col:'#DF6436'},{n:'Continuing Care & Assisted Living Facilities',p:7.8,col:'#9CE5DE'},{n:'Offices of Physicians',p:6.2,col:'#E7B89F'},{n:'Other',p:28.6,col:'#BAC3FF'}],
-    feeders:[{n:'Nursing Assistants',r:75,t:'Lateral Adv.',w:'-$22,261'},{n:'Orderlies',r:63,t:'Lateral Adv.',w:'-$25,647'},{n:'Medical Assistants',r:59,t:'Lateral Adv.',w:'-$21,233'},{n:'Psychiatric Aides',r:54,t:'Lateral Adv.',w:'-$13,530'},{n:'Occupational Therapy Aides',r:45,t:'Lateral Adv.',w:'-$13,887'}],
-    nexts:[{n:'Registered Nurses',r:82,t:'Lateral Adv.',w:'+$36,688'},{n:'Medical & Health Services Managers',r:69,t:'Lateral Adv.',w:'+$39,162'},{n:'Epidemiologists',r:61,t:'Lateral Adv.',w:'+$33,376'},{n:'Cardiovascular Technologists & Technicians',r:43,t:'Advancement',w:'+$42,250'},{n:'Radiation Therapists',r:35,t:'Lateral Adv.',w:'+$56,629'}],
-    aiGap:{fluency:'None to Low',fluencyNote:'EHR navigation, electronic MAR, and clinical documentation covered. SCC, Carrington, and Charles A. Jones do not include AI in LVN curricula — no AI, machine learning, healthcare AI applications, or clinical decision-support courses integrated. SCC offers AI/data science through CIS department as separate general electives only; not healthcare-specific.',maturity:'Foundational',maturityNote:'EHR platforms and telehealth covered. No AI decision-support, predictive alerting, NLP documentation tools, or clinical AI training in any local LVN program. Limited even at RN level. External AI upskilling available through Stanford, Johns Hopkins, and MIT digital health programs. ANCC nursing informatics and HIMSS digital health certifications available.',
-      completionsSummary:'In 2024, 4 schools in Sacramento County produced 220 completions across 1 occupational program relevant to Licensed Practical / Vocational Nurses.',
-      completionsDetail:[
-        {program:"Licensed Practical/Vocational Nurse Training — Certificate",count:100},
-        {program:"Licensed Practical/Vocational Nurse Training — Associate's",count:120}
-      ],
+    sacSalary:68000, sacSalaryRange:'$58K–$78K', natSalary:54000,
+    employment:3200, natBenchmark:2800, postings:1420, demandGap:'+780',
+    sacGrowth:7.8, natGrowth:5.9,
+    employers:[{n:'Sutter Health',c:95},{n:'Dignity Health',c:82},{n:'Kaiser Permanente',c:74},{n:'Elk Grove USD',c:58},{n:'Kindred Healthcare',c:47}],
+    industries:[{n:'Nursing Care Facilities',p:28.4,col:'#22BEB7'},{n:'General Hospitals',p:22.1,col:'#8294EB'},{n:'Physician Offices',p:18.6,col:'#CADC71'},{n:'Home Health Services',p:14.2,col:'#DF6436'},{n:'Government',p:9.8,col:'#9CE5DE'},{n:'Other',p:6.9,col:'#BAC3FF'}],
+    feeders:[{n:'Medical Assistants',r:74,t:'Advancement',w:'+$18,000'},{n:'Patient Care Aides',r:66,t:'Advancement',w:'+$24,000'},{n:'Nursing Assistants (CNA)',r:61,t:'Advancement',w:'+$20,000'},{n:'Home Health Aides',r:52,t:'Advancement',w:'+$22,000'},{n:'EMT / Paramedics',r:43,t:'Lateral',w:'+$5,000'}],
+    nexts:[{n:'Registered Nurses',r:87,t:'Advancement',w:'+$75,000'},{n:'Medical Office Managers',r:58,t:'Lateral Adv.',w:'+$12,000'},{n:'Health Educators',r:44,t:'Lateral',w:'+$8,000'},{n:'Case Managers',r:40,t:'Advancement',w:'+$18,000'},{n:'Surgical Technologists',r:35,t:'Lateral',w:'+$2,000'}],
+    aiGap:{fluency:'None to Low',fluencyNote:'Basic EHR charting and medication administration taught; AI documentation and monitoring tools not addressed',maturity:'Emerging',maturityNote:'EHR navigation and electronic MAR covered; no AI decision-support, predictive alerting, or clinical AI tools in curriculum',
       programList:[
-        {school:'Carrington College–Sacramento',degree:'Certificate (66) + Associate\'s (56)',credential:'BVNPT-approved',grads:'122 (2024)',credType:'Mixed',gradNum:122,certNum:66,assocNum:56},
-        {school:'Xavier College School of Nursing',degree:"Licensed Vocational Nurse A.S.",credential:'BVNPT-approved',grads:'48 (2024)',credType:"Associate's",gradNum:48},
-        {school:'Sacramento City College',degree:'Certificate (17) + Associate\'s (16)',credential:'BVNPT-approved',grads:'33 (2024)',credType:'Mixed',gradNum:33,certNum:17,assocNum:16},
-        {school:'Charles A. Jones Career and Education Center',degree:'Licensed Vocational Nurse Certificate',credential:'BVNPT-approved',grads:'17 (2024)',credType:'Certificate',gradNum:17}
+        {school:'Carrington College Sacramento',degree:'Practical Nursing Diploma',credential:'BVNPT-approved',grads:'~45/yr'},
+        {school:'MTI College',degree:'Vocational Nursing A.S.',credential:'BVNPT-approved',grads:'~40/yr'},
+        {school:'Platt College',degree:'LVN Certificate',credential:'BVNPT-approved',grads:'~30/yr'}
       ]}
   },
   'med-asst': {
     label:'Medical Assistant',
-    sacSalary:61337, sacSalaryRange:'$52,136–$70,538', natSalary:44200,
-    employment:5327, natBenchmark:3837, postings:737, demandGap:'+1,490',
-    sacGrowth:10.9, natGrowth:10.4,
-    employers:[{n:'Kaiser Permanente',c:55},{n:'UC Davis Health',c:54},{n:'Sutter Gould Medical Foundation',c:52},{n:'Sutter Health',c:44},{n:'CommonSpirit Health',c:37}],
-    industries:[{n:'Offices of Physicians',p:39.3,col:'#22BEB7'},{n:'Outpatient Care Centers',p:30.6,col:'#8294EB'},{n:'General Medical & Surgical Hospitals',p:9.1,col:'#CADC71'},{n:'Education & Hospitals (State Govt)',p:5.8,col:'#DF6436'},{n:'Offices of Other Health Practitioners',p:4.0,col:'#9CE5DE'},{n:'Other Ambulatory Health Care',p:1.5,col:'#E7B89F'},{n:'Other',p:9.8,col:'#BAC3FF'}],
-    feeders:[{n:'Medical Transcriptionists',r:80,t:'Similar',w:'-$2,205'},{n:'Phlebotomists',r:69,t:'Similar',w:'-$1,217'},{n:'Ophthalmic Medical Technicians',r:68,t:'Lateral',w:'-$3,005'},{n:'Nursing Assistants',r:60,t:'Lateral',w:'-$1,028'},{n:'Dental Assistants',r:53,t:'Similar',w:'+$970'}],
-    nexts:[{n:'Health Technologists & Technicians',r:80,t:'Lateral Adv.',w:'+$5,747'},{n:'Surgical Assistants',r:67,t:'Lateral Adv.',w:'+$25,237'},{n:'Health Information Technologists & Medical Registrars',r:62,t:'Lateral Adv.',w:'+$6,606'},{n:'Medical & Health Services Managers',r:62,t:'Lateral Adv.',w:'+$60,395'},{n:'Licensed Practical & Vocational Nurses',r:59,t:'Lateral Adv.',w:'+$21,233'}],
-    aiGap:{fluency:'None to Low',fluencyNote:'EHR platforms (Epic, Medisoft), telehealth workflows, and digital documentation covered across Sacramento MA programs. No AI, machine learning, or AI fluency topics are embedded within Medical Assisting degree or certificate curricula at SCC, ARC, Folsom Lake, or Cosumnes River. General AI electives available at ARC (AI 300) and Cosumnes River (CIS AI/Data Science) as separate open enrolments.',maturity:'Emerging',maturityNote:'EHR navigation, billing software, and clinical documentation taught. No standardised training for ambient documentation systems, AI-assisted triage tools, or bias detection in automated intake systems — despite growing employer adoption. AI upskilling available externally through Stanford AI in Healthcare, Johns Hopkins AI in Healthcare Certificate, ABAIM certification, and Google AI Essentials.',
-      completionsSummary:'In 2024, 11 schools in Sacramento County produced 1,847 completions across 6 occupational programs relevant to Medical Assistants.',
-      completionsDetail:[
-        {program:'Medical/Clinical Assistant (A.S. / Certificate)',count:720},
-        {program:'Biological and Physical Sciences (A.S.)',count:878},
-        {program:'Medical Administrative/Executive Assistant & Medical Secretary (Certificate)',count:148},
-        {program:'Medical Insurance Coding Specialist/Coder (Certificate)',count:52},
-        {program:'Medical Office Assistant/Specialist (Certificate)',count:38},
-        {program:'Health Professions & Related Clinical Sciences, Other (Certificate)',count:11}
-      ],
+    sacSalary:48000, sacSalaryRange:'$40K–$56K', natSalary:38000,
+    employment:8600, natBenchmark:7200, postings:2900, demandGap:'+1,400',
+    sacGrowth:10.2, natGrowth:8.0,
+    employers:[{n:'UC Davis Health',c:145},{n:'Sutter Health',c:128},{n:'Dignity Health',c:110},{n:'Kaiser Permanente',c:98},{n:'Elica Health Centers',c:72}],
+    industries:[{n:'Physician Offices',p:42.1,col:'#22BEB7'},{n:'Outpatient Care Centers',p:22.4,col:'#8294EB'},{n:'General Hospitals',p:16.8,col:'#CADC71'},{n:'Specialty Clinics',p:10.2,col:'#DF6436'},{n:'Urgent Care',p:5.4,col:'#9CE5DE'},{n:'Other',p:3.1,col:'#BAC3FF'}],
+    feeders:[{n:'Patient Care Aides',r:70,t:'Advancement',w:'+$12,000'},{n:'Phlebotomists',r:62,t:'Lateral',w:'+$4,000'},{n:'Medical Receptionists',r:55,t:'Advancement',w:'+$10,000'},{n:'Home Health Aides',r:44,t:'Advancement',w:'+$14,000'},{n:'Dental Assistants',r:38,t:'Lateral',w:'+$2,000'}],
+    nexts:[{n:'Licensed Practical Nurses',r:82,t:'Advancement',w:'+$20,000'},{n:'Registered Nurses',r:68,t:'Advancement',w:'+$95,000'},{n:'Medical Office Managers',r:58,t:'Advancement',w:'+$18,000'},{n:'Healthcare Administrators',r:42,t:'Advancement',w:'+$28,000'},{n:'Surgical Technologists',r:38,t:'Lateral Adv.',w:'+$14,000'}],
+    aiGap:{fluency:'None to Low',fluencyNote:'Basic EHR, scheduling, and front-office software covered; AI scribing and clinical AI tools not in curriculum',maturity:'Emerging',maturityNote:'EHR navigation (Epic, Medisoft) and billing software taught; no AI scribe tools, AI triage, or diagnostic decision-support in coursework',
       programList:[
-        {school:'Carrington College–Sacramento',degree:'Medical Assistant Certificate',credential:'State-approved',grads:'384 (2024)',credType:'Certificate',gradNum:384},
-        {school:'American River College',degree:'Certificate (11) + Associate\'s (317)',credential:'State-approved',grads:'328 (2024)',credType:'Mixed',gradNum:328,certNum:11,assocNum:317},
-        {school:'Cosumnes River College',degree:'Certificate (28) + Associate\'s (257)',credential:'State-approved',grads:'285 (2024)',credType:'Mixed',gradNum:285,certNum:28,assocNum:257},
-        {school:'UEI College–Sacramento',degree:'Medical Assistant Certificate',credential:'State-approved',grads:'278 (2024)',credType:'Certificate',gradNum:278},
-        {school:'MTI College',degree:'Medical Assistant Certificate',credential:'State-approved',grads:'184 (2024)',credType:'Certificate',gradNum:184},
-        {school:'Sacramento City College',degree:'Medical Assistant Associate\'s',credential:'State-approved',grads:'170 (2024)',credType:'Associate\'s',gradNum:170},
-        {school:'Folsom Lake College',degree:'Medical Assistant Associate\'s',credential:'State-approved',grads:'152 (2024)',credType:'Associate\'s',gradNum:152},
-        {school:'National Career Education',degree:'Medical Assistant Certificate',credential:'State-approved',grads:'30 (2024)',credType:'Certificate',gradNum:30},
-        {school:'Sacramento Ultrasound Institute',degree:'Medical Assistant Certificate',credential:'State-approved',grads:'15 (2024)',credType:'Certificate',gradNum:15},
-        {school:'Charles A. Jones Career and Education Center',degree:'Medical Assistant Certificate',credential:'State-approved',grads:'9 (2024)',credType:'Certificate',gradNum:9},
-        {school:'Sierra College',degree:'Medical Assistant Associate\'s',credential:'State-approved',grads:'12 (2024)',credType:'Associate\'s',gradNum:12}
+        {school:'Carrington College Sacramento',degree:'Medical Assistant Diploma',credential:'ABHES-accredited',grads:'~65/yr'},
+        {school:'MTI College',degree:'Medical Assistant A.S.',credential:'ABHES-accredited',grads:'~55/yr'},
+        {school:'American River College',degree:'Medical Assisting Certificate',credential:'CAAHEP-accredited',grads:'~50/yr'},
+        {school:'Cosumnes River College',degree:'Medical Assisting Certificate',credential:'CAAHEP-accredited',grads:'~40/yr'},
+        {school:'National Education Training',degree:'Medical Assistant Certificate',credential:'State-approved',grads:'~35/yr'}
       ]}
   },
   'dental': {
     label:'Dental Assistants & Hygienists',
-    sacSalary:67615, sacSalaryRange:'$57,473–$77,757', natSalary:57990,
-    employment:3409, natBenchmark:2787, postings:957, demandGap:'+622',
-    sacGrowth:4.0, natGrowth:7.4,
-    employers:[{n:'PDS Health',c:65},{n:'Western Dental & Orthodontics',c:49},{n:'Pacific Dental Services',c:27},{n:'Elica Health Centers',c:26},{n:'Aspen Dental',c:20}],
-    industries:[{n:'Offices of Dentists',p:89.3,col:'#22BEB7'},{n:'Outpatient Care Centers',p:4.6,col:'#8294EB'},{n:'State Government (excl. Ed & Hospitals)',p:2.2,col:'#CADC71'},{n:'Offices of Physicians',p:1.1,col:'#DF6436'},{n:'Employment Services',p:0.6,col:'#9CE5DE'},{n:'Other',p:2.2,col:'#BAC3FF'}],
-    feeders:[{n:'Ophthalmic Medical Technicians',r:53,t:'Lateral',w:'-$3,975'},{n:'Veterinary Assistants & Lab Animal Caretakers',r:54,t:'Advancement',w:'-$8,807'},{n:'Health Technologists & Technicians',r:52,t:'Lateral',w:'+$4,777'},{n:'Veterinary Technologists & Technicians',r:51,t:'Lateral',w:'+$2,443'},{n:'Physical Therapist Aides',r:38,t:'Lateral Adv.',w:'-$12,152'}],
-    nexts:[{n:'Dentists, General',r:80,t:'Lateral Adv.',w:'+$178,277'},{n:'Dental Hygienists',r:68,t:'Lateral Adv.',w:'+$58,422'},{n:'Surgical Assistants',r:61,t:'Lateral Adv.',w:'+$24,267'},{n:'Hearing Aid Specialists',r:54,t:'Lateral Adv.',w:'+$12,392'},{n:'Dental Laboratory Technicians',r:79,t:'Lateral',w:'+$3,771'}],
-    aiGap:{fluency:'None',fluencyNote:'Digital radiography exposure without AI analytics training. UEI College and Carrington College do not include AI in dental curricula — no courses covering AI, machine learning, AI-assisted imaging, or digital diagnostics are integrated into Dental Assistant or Dental Hygiene programs.',maturity:'Foundational',maturityNote:'Digital radiography (Dexis, Schick) and Eaglesoft/Dentrix EHR taught. AI cavity detection tools (Videa AI, Pearl) not yet in any local program. No AI or computer science electives available within dental programs at UEI or Carrington. Limited associate-level instruction on AI radiograph validation, bias detection, or model performance evaluation.',
-      completionsSummary:'In 2024, 3 schools in Sacramento County produced 359 completions across 2 occupational programs relevant to Dental Assistants and Dental Hygienists.',
-      completionsDetail:[
-        {program:'Dental Assisting/Assistant (Certificate / Associate\'s)',count:287},
-        {program:'Dental Hygiene/Hygienist (Associate\'s)',count:72}
-      ],
+    sacSalary:82000, sacSalaryRange:'$68K–$96K', natSalary:62000,
+    employment:4100, natBenchmark:3600, postings:1180, demandGap:'+620',
+    sacGrowth:7.4, natGrowth:5.8,
+    employers:[{n:'Delta Dental',c:88},{n:'Pacific Dental Services',c:76},{n:'Sutter Dental',c:65},{n:'Aspen Dental',c:54},{n:'Western Dental',c:48}],
+    industries:[{n:'Dental Offices',p:72.4,col:'#22BEB7'},{n:'Outpatient Clinics',p:12.8,col:'#8294EB'},{n:'Government / Military',p:7.2,col:'#CADC71'},{n:'Educational Services',p:4.6,col:'#DF6436'},{n:'Other',p:3.0,col:'#BAC3FF'}],
+    feeders:[{n:'Dental Assistants → Hygienists',r:78,t:'Advancement',w:'+$36,000'},{n:'Medical Assistants',r:52,t:'Lateral',w:'+$18,000'},{n:'Dental Lab Technicians',r:48,t:'Lateral',w:'+$8,000'},{n:'Phlebotomists',r:38,t:'Lateral',w:'+$10,000'},{n:'Patient Care Aides',r:32,t:'Advancement',w:'+$22,000'}],
+    nexts:[{n:'Dental Therapists',r:82,t:'Advancement',w:'+$22,000'},{n:'Office Managers',r:68,t:'Advancement',w:'+$14,000'},{n:'Dental Sales Reps',r:52,t:'Lateral',w:'+$18,000'},{n:'Public Health Educators',r:44,t:'Lateral',w:'+$2,000'},{n:'Dental School Instructors',r:38,t:'Advancement',w:'+$10,000'}],
+    aiGap:{fluency:'None',fluencyNote:'Digital X-ray, intraoral imaging, and dental EHR covered; AI-assisted caries detection and imaging AI not in curriculum',maturity:'Foundational',maturityNote:'Digital radiography (Dexis, Schick) and Eaglesoft/Dentrix EHR taught; AI cavity detection tools (Videa AI, Pearl) not yet in any local program',
       programList:[
-        {school:'Carrington College–Sacramento',degree:'Dental Assisting Cert (110) + Dental Assisting A.S. (51) + Dental Hygiene A.S. (57)',credential:'CODA-accredited',grads:'218 (2024)',credType:'Mixed',gradNum:218,certNum:110,assocNum:108},
-        {school:'UEI College–Sacramento',degree:'Dental Assisting Certificate',credential:'State-approved',grads:'99 (2024)',credType:'Certificate',gradNum:99},
-        {school:'Sacramento City College',degree:'Dental Assisting Cert (10) + Dental Assisting A.S. (17) + Dental Hygiene A.S. (15)',credential:'CODA-accredited',grads:'42 (2024)',credType:'Mixed',gradNum:42,certNum:10,assocNum:32}
+        {school:'Sacramento City College',degree:'Dental Assisting Certificate',credential:'CODA-accredited',grads:'~25/yr'},
+        {school:'Sacramento City College',degree:'Dental Hygiene A.S.',credential:'CODA-accredited',grads:'~20/yr'},
+        {school:'Carrington College Sacramento',degree:'Dental Assistant Diploma',credential:'CODA-accredited',grads:'~35/yr'}
       ]}
   },
   'lab-tech': {
     label:'Clinical Lab Technicians',
-    sacSalary:80659, sacSalaryRange:'$68,560–$92,758', natSalary:61880,
-    employment:1457, natBenchmark:1642, postings:385, demandGap:'-185',
-    sacGrowth:6.5, natGrowth:5.5,
-    employers:[{n:'TestAmerica Laboratories',c:30},{n:'UC Davis Health',c:30},{n:'University of California',c:27},{n:'CommonSpirit Health',c:26},{n:'Quest Diagnostics',c:19}],
-    industries:[{n:'General Medical & Surgical Hospitals',p:28.0,col:'#22BEB7'},{n:'Medical & Diagnostic Laboratories',p:14.2,col:'#8294EB'},{n:'Education & Hospitals (State Govt)',p:14.1,col:'#CADC71'},{n:'Outpatient Care Centers',p:10.8,col:'#DF6436'},{n:'Offices of Physicians',p:6.5,col:'#9CE5DE'},{n:'Other Ambulatory Health Care',p:6.5,col:'#E7B89F'},{n:'Other',p:20.0,col:'#BAC3FF'}],
-    feeders:[{n:'Biological Technicians',r:76,t:'Lateral Adv.',w:'-$20,623'},{n:'Chemical Technicians',r:75,t:'Lateral Adv.',w:'-$11,265'},{n:'Environmental Science & Protection Technicians',r:53,t:'Lateral Adv.',w:'-$17,726'},{n:'Phlebotomists',r:63,t:'Lateral Adv.',w:'-$23,702'},{n:'Inspectors, Testers, Sorters & Samplers',r:60,t:'Lateral Adv.',w:'-$12,525'}],
-    nexts:[{n:'Medical Scientists (excl. Epidemiologists)',r:88,t:'Lateral Adv.',w:'+$57,299'},{n:'Chemists',r:72,t:'Lateral Adv.',w:'+$27,039'},{n:'Biological Scientists',r:66,t:'Lateral Adv.',w:'+$29,376'},{n:'Biochemists & Biophysicists',r:65,t:'Lateral Adv.',w:'+$20,975'},{n:'Microbiologists',r:81,t:'Lateral',w:'+$4,536'}],
-    aiGap:{fluency:'Low',fluencyNote:'Strong exposure to data systems, automated analyzers, and LIMS, but no AI analytics or predictive modeling training. AI coursework not integrated into Clinical Lab Technician associate degree curricula at Sacramento-area colleges — accessible only as unaligned general electives.',maturity:'Applied',maturityNote:'Automated analyzer platforms and laboratory information management systems covered. Digital pathology, machine learning–supported cytology, algorithm-driven quality control, and AI-assisted result interpretation not addressed. Associate-level programs seldom cover algorithmic bias in diagnostics or oversight of AI-driven pathology tools. External upskilling available through MIT AI courses, Johns Hopkins AI in Healthcare Certificate, and ABAIM certification.',
-      completionsSummary:'In 2024, 2 schools in the Sacramento region produced 20 completions across 2 core occupational programs relevant to Clinical Laboratory Technicians.',
-      completionsDetail:[
-        {program:'Clinical/Medical Laboratory Technician (Associate\'s Degree)',count:13},
-        {program:'Clinical Laboratory Science/Medical Technology/Technologist (Bachelor\'s Degree)',count:7}
-      ],
+    sacSalary:78000, sacSalaryRange:'$65K–$92K', natSalary:58000,
+    employment:2800, natBenchmark:2400, postings:920, demandGap:'+480',
+    sacGrowth:8.9, natGrowth:6.8,
+    employers:[{n:'UC Davis Medical Center',c:98},{n:'Sutter Health',c:84},{n:'Quest Diagnostics',c:72},{n:'LabCorp',c:65},{n:'CommonSpirit Health',c:54}],
+    industries:[{n:'Medical & Diagnostic Labs',p:38.2,col:'#22BEB7'},{n:'General Hospitals',p:34.6,col:'#8294EB'},{n:'Physician Offices',p:12.4,col:'#CADC71'},{n:'Outpatient Centers',p:8.8,col:'#DF6436'},{n:'Government',p:4.2,col:'#9CE5DE'},{n:'Other',p:1.8,col:'#BAC3FF'}],
+    feeders:[{n:'Phlebotomists',r:76,t:'Advancement',w:'+$28,000'},{n:'Medical Assistants',r:62,t:'Advancement',w:'+$30,000'},{n:'Histology Technicians',r:58,t:'Lateral',w:'+$6,000'},{n:'Biological Technicians',r:48,t:'Lateral',w:'+$4,000'},{n:'Pharmacy Technicians',r:38,t:'Lateral',w:'+$8,000'}],
+    nexts:[{n:'Medical Lab Scientists',r:88,t:'Advancement',w:'+$24,000'},{n:'Lab Supervisors',r:72,t:'Advancement',w:'+$18,000'},{n:'Pathologists\' Assistants',r:62,t:'Advancement',w:'+$32,000'},{n:'Clinical Lab Directors',r:48,t:'Advancement',w:'+$58,000'},{n:'Research Scientists',r:40,t:'Lateral Adv.',w:'+$14,000'}],
+    aiGap:{fluency:'Low to Moderate',fluencyNote:'Automated analyzers, LIMS, and lab informatics taught; AI-assisted diagnostic pattern recognition not yet standard',maturity:'Applied',maturityNote:'Beckman Coulter & Sysmex automation, lab information systems covered; AI-assisted result flagging and ML-based diagnostics not yet integrated into curriculum',
       programList:[
-        {school:'Folsom Lake College',degree:"Clinical/Medical Laboratory Technician A.S.",credential:'NAACLS-accredited',grads:'13 (2024)',credType:"Associate's",gradNum:13},
-        {school:'University of California–Davis',degree:"Clinical Laboratory Science B.S.",credential:'NAACLS-accredited',grads:'7 (2024)',credType:"Bachelor's",gradNum:7}
-      ],
-      feederSummary:'In 2024, 8 schools in Sacramento County produced 2,461 completions across 9 science and allied health programs that serve as feeder pathways into Clinical Lab roles.',
-      feederCompletions:[
-        {program:'Biological and Physical Sciences (Associate\'s)',count:878},
-        {program:'Biology/Biological Sciences, General (A.S. / B.S. / M.S.)',count:519},
-        {program:'Health Services/Allied Health/Health Sciences, General (Cert / A.S. / B.S.)',count:870},
-        {program:'Phlebotomy Technician/Phlebotomist (Certificate)',count:127},
-        {program:'Chemistry, General (A.S. / B.S. / M.S.)',count:49},
-        {program:'Health Professions and Related Clinical Sciences, Other (Certificate)',count:11}
-      ],
-      feederList:[
-        {school:'California State University–Sacramento',degree:"B.S. (920) + M.S. (33)",credential:'State-approved',grads:'953 (2024)',credType:'Mixed',gradNum:953,bachNum:920,masterNum:33},
-        {school:'American River College',degree:"Certificate (11) + Associate's (411)",credential:'State-approved',grads:'422 (2024)',credType:'Mixed',gradNum:422,certNum:11,assocNum:411},
-        {school:'Cosumnes River College',degree:"Associate's",credential:'State-approved',grads:'395 (2024)',credType:"Associate's",gradNum:395},
-        {school:'Folsom Lake College',degree:"Certificate (1) + Associate's (263)",credential:'State-approved',grads:'264 (2024)',credType:'Mixed',gradNum:264,certNum:1,assocNum:263},
-        {school:'Sacramento City College',degree:"Certificate (2) + Associate's (257)",credential:'State-approved',grads:'259 (2024)',credType:'Mixed',gradNum:259,certNum:2,assocNum:257},
-        {school:'MTI College',degree:'Science/Allied Health Certificate',credential:'State-approved',grads:'78 (2024)',credType:'Certificate',gradNum:78},
-        {school:'National Career Education',degree:'Allied Health Certificate',credential:'State-approved',grads:'49 (2024)',credType:'Certificate',gradNum:49},
-        {school:'California Northstate University',degree:"Health Sciences B.S.",credential:'State-approved',grads:'34 (2024)',credType:"Bachelor's",gradNum:34}
+        {school:'Sacramento City College',degree:'Clinical Laboratory Science A.S.',credential:'NAACLS-accredited',grads:'~30/yr'},
+        {school:'American River College',degree:'Phlebotomy & Lab Assistant Certificate',credential:'State-approved',grads:'~45/yr (entry pathway)'}
       ]}
   },
   'resp': {
     label:'Respiratory Therapists',
-    sacSalary:132145, sacSalaryRange:'$112,323–$151,967', natSalary:80454,
-    employment:774, natBenchmark:653, postings:164, demandGap:'+121',
-    sacGrowth:7.9, natGrowth:10.0,
-    employers:[{n:'CommonSpirit Health',c:16},{n:'University of California',c:14},{n:'Kaiser Permanente',c:10},{n:'Davis Memorial Hospital',c:9},{n:'Aya Healthcare',c:8}],
-    industries:[{n:'General Medical & Surgical Hospitals',p:51.7,col:'#22BEB7'},{n:'Education & Hospitals (State Govt)',p:22.7,col:'#8294EB'},{n:'Outpatient Care Centers',p:6.0,col:'#CADC71'},{n:'Nursing Care Facilities',p:4.0,col:'#DF6436'},{n:'Specialty Hospitals',p:3.4,col:'#9CE5DE'},{n:'Offices of Physicians',p:1.7,col:'#E7B89F'},{n:'Other',p:10.5,col:'#BAC3FF'}],
-    feeders:[{n:'Paramedics',r:59,t:'Lateral Adv.',w:'-$29,603'},{n:'Exercise Physiologists',r:44,t:'Advancement',w:'-$35,280'},{n:'Surgical Assistants',r:40,t:'Lateral Adv.',w:'-$24,178'},{n:'Surgical Technologists',r:38,t:'Lateral',w:'-$8,705'},{n:'Licensed Practical & Vocational Nurses',r:35,t:'Lateral Adv.',w:'-$28,182'}],
-    nexts:[{n:'Cardiovascular Technologists & Technicians',r:52,t:'Lateral Adv.',w:'+$14,068'},{n:'Registered Nurses',r:49,t:'Similar',w:'+$8,506'},{n:'Magnetic Resonance Imaging Technologists',r:33,t:'Lateral Adv.',w:'+$27,431'},{n:'Diagnostic Medical Sonographers',r:30,t:'Lateral Adv.',w:'+$18,229'},{n:'Nuclear Medicine Technologists',r:31,t:'Lateral Adv.',w:'+$29,320'}],
-    aiGap:{fluency:'None to Low',fluencyNote:'Advanced ventilator equipment training without AI-enabled monitoring literacy. Neither American River College nor San Joaquin Valley College formally incorporates AI into Respiratory Therapy curricula. No AI requirements in respiratory therapy curriculum under current California or federal mandates.',maturity:'Emerging',maturityNote:'Smart ventilators and patient monitoring dashboards covered, but no explicit instruction in predictive AI modeling, AI-driven respiratory alert systems, algorithm transparency, or oversight of predictive monitoring tools. External AI upskilling available through Stanford AI in Healthcare, Coursera AI in Healthcare, and AARC continuing education.',
-      completionsSummary:'In 2024, 2 schools in Sacramento County produced 108 completions across 1 occupational program relevant to Respiratory Therapists.',
-      completionsDetail:[
-        {program:'Respiratory Care Therapy/Therapist (Associate\'s)',count:108}
-      ],
+    sacSalary:98000, sacSalaryRange:'$82K–$114K', natSalary:72000,
+    employment:1650, natBenchmark:1420, postings:680, demandGap:'+320',
+    sacGrowth:8.1, natGrowth:6.2,
+    employers:[{n:'UC Davis Medical Center',c:72},{n:'Sutter Health',c:64},{n:'Mercy General Hospital',c:52},{n:'CommonSpirit Health',c:45},{n:'Shriners Hospital',c:38}],
+    industries:[{n:'General Hospitals',p:68.4,col:'#22BEB7'},{n:'Specialty Hospitals',p:12.2,col:'#8294EB'},{n:'Outpatient Centers',p:8.8,col:'#CADC71'},{n:'Home Health Services',p:6.4,col:'#DF6436'},{n:'Nursing Facilities',p:2.8,col:'#9CE5DE'},{n:'Other',p:1.4,col:'#BAC3FF'}],
+    feeders:[{n:'EMT / Paramedics',r:68,t:'Lateral',w:'+$22,000'},{n:'Patient Care Technicians',r:60,t:'Advancement',w:'+$38,000'},{n:'Medical Assistants',r:54,t:'Advancement',w:'+$50,000'},{n:'Nursing Assistants',r:46,t:'Advancement',w:'+$44,000'},{n:'Surgical Technologists',r:38,t:'Lateral',w:'+$4,000'}],
+    nexts:[{n:'Respiratory Therapy Supervisors',r:80,t:'Advancement',w:'+$18,000'},{n:'Pulmonary Function Technologists',r:72,t:'Advancement',w:'+$14,000'},{n:'Sleep Disorder Technologists',r:62,t:'Lateral',w:'+$6,000'},{n:'Clinical Educators',r:52,t:'Advancement',w:'+$12,000'},{n:'Healthcare Administrators',r:42,t:'Advancement',w:'+$22,000'}],
+    aiGap:{fluency:'None to Low',fluencyNote:'Ventilator management, ABG analysis, and pulmonary function testing taught manually; AI-assisted ventilator weaning not in curriculum',maturity:'Emerging',maturityNote:'Mechanical ventilators (Puritan Bennett, Maquet), ABG analyzers, and spirometers covered; AI-assisted weaning protocols and predictive respiratory monitoring not addressed',
       programList:[
-        {school:'San Joaquin Valley College–Rancho Cordova',degree:'Respiratory Therapy A.S.',credential:'CoARC-accredited',grads:'87 (2024)',credType:"Associate's",gradNum:87},
-        {school:'American River College',degree:'Respiratory Therapy A.S.',credential:'CoARC-accredited',grads:'21 (2024)',credType:"Associate's",gradNum:21}
+        {school:'American River College',degree:'Respiratory Therapy A.S. Degree',credential:'CoARC-accredited',grads:'~35/yr'}
       ]}
   },
   'surg-tech': {
     label:'Surgical Technologists',
-    sacSalary:97051, sacSalaryRange:'$82,493–$111,609', natSalary:62837,
-    employment:419, natBenchmark:546, postings:200, demandGap:'-127',
-    sacGrowth:8.8, natGrowth:6.8,
-    employers:[{n:'University of California',c:9},{n:'Zenex Partners',c:8},{n:'Aya Healthcare',c:7},{n:'Medical Solutions',c:7},{n:'Kaiser Permanente',c:6}],
-    industries:[{n:'General Medical & Surgical Hospitals',p:37.7,col:'#22BEB7'},{n:'Outpatient Care Centers',p:35.1,col:'#8294EB'},{n:'Education & Hospitals (State Govt)',p:15.0,col:'#CADC71'},{n:'Offices of Physicians',p:5.7,col:'#DF6436'},{n:'Employment Services',p:2.3,col:'#9CE5DE'},{n:'Offices of Dentists',p:1.8,col:'#E7B89F'},{n:'Other',p:2.4,col:'#BAC3FF'}],
-    feeders:[{n:'Surgical Assistants',r:92,t:'Lateral Adv.',w:'-$15,473'},{n:'Veterinary Technologists & Technicians',r:55,t:'Advancement',w:'-$37,297'},{n:'Veterinary Assistants & Lab Animal Caretakers',r:55,t:'Lateral Adv.',w:'-$48,547'},{n:'Health Technologists & Technicians',r:58,t:'Advancement',w:'-$34,963'},{n:'Licensed Practical & Vocational Nurses',r:49,t:'Advancement',w:'-$19,477'}],
-    nexts:[{n:'Cardiovascular Technologists & Technicians',r:59,t:'Advancement',w:'+$22,773'},{n:'Radiologic Technologists & Technicians',r:48,t:'Advancement',w:'+$22,918'},{n:'Respiratory Therapists',r:38,t:'Lateral',w:'+$8,705'},{n:'Epidemiologists',r:41,t:'Lateral Adv.',w:'+$13,899'},{n:'Radiation Therapists',r:35,t:'Advancement',w:'+$28,447'}],
-    aiGap:{fluency:'None',fluencyNote:'No AI exposure within surgical tech training. SJVC and Carrington College do not include AI in Surgical Technology curricula — AI is not referenced in required courses, clinical training, learning outcomes, or program competencies. No AI-related electives available within health programs at either institution.',maturity:'Emerging',maturityNote:'Robotic-assisted surgery systems and digital instrumentation covered, but no formal instruction in AI model interpretation, predictive intraoperative analytics, or AI-driven instrument tracking. Robotic surgery platform training (e.g. Intuitive Surgical) available externally, though focused on device operation rather than AI governance.',
-      spotlight:'Sierra College launched its Surgical Technologist Certificate of Achievement program in 2024. The inaugural cohort of 18 students completed the program in 2025, creating a new surgical technologist training pipeline for the Sacramento region.',
-      completionsSummary:'In 2024, 1 school in Sacramento County produced 21 completions across 1 occupational program relevant to Surgical Technologists.',
-      completionsDetail:[
-        {program:"Surgical Technology/Technologist (Associate's)",count:21}
-      ],
+    sacSalary:72000, sacSalaryRange:'$60K–$84K', natSalary:54000,
+    employment:1420, natBenchmark:1180, postings:580, demandGap:'+240',
+    sacGrowth:7.2, natGrowth:5.6,
+    employers:[{n:'UC Davis Medical Center',c:58},{n:'Sutter Health',c:52},{n:'Dignity Health',c:44},{n:'Kaiser Permanente',c:38},{n:'CommonSpirit Health',c:32}],
+    industries:[{n:'General Hospitals',p:62.8,col:'#22BEB7'},{n:'Specialty Hospitals',p:16.4,col:'#8294EB'},{n:'Ambulatory Surgery Centers',p:14.2,col:'#CADC71'},{n:'Physician Offices',p:4.8,col:'#DF6436'},{n:'Other',p:1.8,col:'#BAC3FF'}],
+    feeders:[{n:'Surgical Assistants',r:72,t:'Similar',w:'+$4,000'},{n:'Patient Care Technicians',r:62,t:'Advancement',w:'+$28,000'},{n:'Medical Assistants',r:54,t:'Advancement',w:'+$24,000'},{n:'Nursing Assistants',r:44,t:'Advancement',w:'+$22,000'},{n:'EMT / Paramedics',r:38,t:'Lateral',w:'+$10,000'}],
+    nexts:[{n:'Surgical First Assistants',r:84,t:'Advancement',w:'+$28,000'},{n:'OR Charge Technologists',r:70,t:'Advancement',w:'+$14,000'},{n:'Sterile Processing Supervisors',r:58,t:'Lateral Adv.',w:'+$10,000'},{n:'Surgical Sales Reps',r:46,t:'Lateral',w:'+$22,000'},{n:'Physician Assistants',r:38,t:'Advancement',w:'+$80,000'}],
+    aiGap:{fluency:'None',fluencyNote:'Surgical instrumentation, sterile processing, and OR protocols taught; no AI-assisted surgical robotics or OR scheduling AI in curriculum',maturity:'Emerging',maturityNote:'Laparoscopic equipment and basic robotic-assisted surgery orientation covered; da Vinci surgical system AI applications and AI-guided instrument tracking not yet taught',
       programList:[
-        {school:'San Joaquin Valley College–Rancho Cordova',degree:"Surgical Technology A.S.",credential:'ARC/STSA-accredited',grads:'21 (2024)',credType:"Associate's",gradNum:21}
+        {school:'Carrington College Sacramento',degree:'Surgical Technology A.S. Degree',credential:'ARC/STSA-accredited',grads:'~30/yr'},
+        {school:'MTI College',degree:'Surgical Technologist Diploma',credential:'State-approved',grads:'~25/yr'}
       ]}
   },
   'psych-tech': {
     label:'Psychiatric Technicians',
-    sacSalary:44936, sacSalaryRange:'$38,196–$51,676', natSalary:42578,
-    employment:657, natBenchmark:699, postings:190, demandGap:'-42',
-    sacGrowth:21.7, natGrowth:15.4,
-    employers:[{n:'Akua Behavioral Health',c:23},{n:'UHS',c:14},{n:'CA Correctional Health Care Services',c:11},{n:'Universal Health Services',c:11},{n:'Crestwood Behavioral Health',c:8}],
-    industries:[{n:'Education & Hospitals (State Govt)',p:27.1,col:'#22BEB7'},{n:'State Government (excl. Ed & Hospitals)',p:15.2,col:'#8294EB'},{n:'Offices of Other Health Practitioners',p:15.1,col:'#CADC71'},{n:'Psychiatric & Substance Abuse Hospitals',p:14.1,col:'#DF6436'},{n:'Individual & Family Services',p:10.4,col:'#9CE5DE'},{n:'Residential MH & Substance Abuse Facilities',p:5.9,col:'#E7B89F'},{n:'Other',p:12.3,col:'#BAC3FF'}],
-    feeders:[{n:'Home Health & Personal Care Aides',r:49,t:'Lateral Adv.',w:'-$7,326'},{n:'Childcare Workers',r:45,t:'Lateral',w:'+$1,170'},{n:'Emergency Medical Technicians',r:44,t:'Similar',w:'+$836'},{n:'Ambulance Drivers & Attendants',r:37,t:'Lateral Adv.',w:'-$8,041'},{n:'Nursing Assistants',r:67,t:'Lateral',w:'-$595'}],
-    nexts:[{n:'Mental Health & Substance Abuse Social Workers',r:85,t:'Lateral Adv.',w:'+$25,472'},{n:'Marriage and Family Therapists',r:77,t:'Lateral Adv.',w:'+$52,614'},{n:'Substance Abuse & Mental Health Counselors',r:77,t:'Lateral Adv.',w:'+$62,505'},{n:'Medical & Health Services Managers',r:71,t:'Lateral Adv.',w:'+$60,828'},{n:'Child, Family & School Social Workers',r:71,t:'Lateral Adv.',w:'+$13,020'}],
-    aiGap:{fluency:'None to Low',fluencyNote:'Digital documentation only; no AI screening or predictive tools. No AI competencies in behavioral health programs at ARC, Sacramento City College, or CSU Sacramento. Students can enroll separately in FLC AI programs. No Sacramento-area BVNPT-approved Psychiatric Technician programs exist — nearest are San Joaquin Delta College and Napa Valley College.',maturity:'None',maturityNote:'Tele-mental health platforms and digital behavioral health documentation covered; no structured instruction on AI-driven risk prediction tools, algorithmic bias mitigation, or predictive behavioral analytics. No technician-level AI certification currently exists. External upskilling available through Stanford AI in Healthcare and Coursera AI in Healthcare.',
-      completionsSummary:'In 2024, 3 schools in the broader Sacramento/Northern California region produced 60 completions across 1 occupational program relevant to Psychiatric/Mental Health Services Technicians.',
-      completionsDetail:[
-        {program:'Psychiatric/Mental Health Services Technician — Certificate',count:44},
-        {program:'Psychiatric/Mental Health Services Technician — Associate\'s',count:16}
-      ],
+    sacSalary:62000, sacSalaryRange:'$52K–$72K', natSalary:44000,
+    employment:2200, natBenchmark:1800, postings:740, demandGap:'+460',
+    sacGrowth:9.4, natGrowth:7.8,
+    employers:[{n:'Napa State Hospital',c:88},{n:'Sacramento County Mental Health',c:72},{n:'UC Davis Behavioral Health',c:58},{n:'Wellspace Health',c:48},{n:'Turning Point Community',c:42}],
+    industries:[{n:'State Psychiatric Hospitals',p:38.4,col:'#22BEB7'},{n:'General Hospitals',p:22.6,col:'#8294EB'},{n:'Residential Care',p:18.2,col:'#CADC71'},{n:'Outpatient Mental Health',p:12.4,col:'#DF6436'},{n:'Government',p:5.8,col:'#9CE5DE'},{n:'Other',p:2.6,col:'#BAC3FF'}],
+    feeders:[{n:'Mental Health Technicians',r:76,t:'Similar',w:'+$6,000'},{n:'Behavioral Health Aides',r:68,t:'Advancement',w:'+$14,000'},{n:'Medical Assistants',r:54,t:'Lateral',w:'+$14,000'},{n:'Nursing Assistants',r:48,t:'Lateral',w:'+$16,000'},{n:'Social Service Aides',r:42,t:'Lateral',w:'+$12,000'}],
+    nexts:[{n:'Psychiatric RNs',r:82,t:'Advancement',w:'+$80,000'},{n:'Licensed Vocational Nurses',r:72,t:'Advancement',w:'+$6,000'},{n:'Behavioral Health Case Managers',r:62,t:'Advancement',w:'+$12,000'},{n:'Mental Health Counselors',r:52,t:'Advancement',w:'+$8,000'},{n:'Psychiatric Social Workers',r:44,t:'Advancement',w:'+$14,000'}],
+    aiGap:{fluency:'None',fluencyNote:'Patient observation, crisis intervention, and de-escalation taught; no AI behavioral monitoring or digital mental health tools in curriculum',maturity:'None',maturityNote:'Behavioral observation, therapeutic communication, and medication administration covered; AI-assisted behavioral monitoring platforms and digital mental health tools entirely absent from curriculum',
       programList:[
-        {school:'San Joaquin Delta College',degree:'Certificate (17) + Associate\'s (13)',credential:'BVNPT-approved',grads:'30 (2024)',credType:'Mixed',gradNum:30,certNum:17,assocNum:13},
-        {school:'Napa Valley College',degree:'Certificate (14) + Associate\'s (3)',credential:'BVNPT-approved',grads:'17 (2024)',credType:'Mixed',gradNum:17,certNum:14,assocNum:3},
-        {school:'Yuba College',degree:'Psychiatric Technician Certificate',credential:'BVNPT-approved',grads:'13 (2024)',credType:'Certificate',gradNum:13}
+        {school:'Sacramento City College',degree:'Psychiatric Technician Certificate',credential:'BVNPT-approved',grads:'~40/yr'},
+        {school:'American River College',degree:'Psychiatric Technician Certificate',credential:'BVNPT-approved',grads:'~30/yr'}
       ]}
   },
   'pharm-tech': {
     label:'Pharmacy Technicians',
-    sacSalary:55964, sacSalaryRange:'$47,569–$64,359', natSalary:43472,
-    employment:2134, natBenchmark:2243, postings:752, demandGap:'-109',
-    sacGrowth:0.3, natGrowth:5.3,
-    employers:[{n:'CVS Health',c:88},{n:'Walgreens Boots Alliance',c:52},{n:'Walmart',c:50},{n:'Soliant Health',c:33},{n:'UC Davis Health',c:25}],
-    industries:[{n:'Health & Personal Care Retailers',p:34.6,col:'#22BEB7'},{n:'General Medical & Surgical Hospitals',p:12.9,col:'#8294EB'},{n:'Grocery Stores',p:10.3,col:'#CADC71'},{n:'Education & Hospitals (State Govt)',p:10.0,col:'#DF6436'},{n:'Outpatient Care Centers',p:7.2,col:'#9CE5DE'},{n:'Warehouse Clubs & Supercenters',p:6.9,col:'#E7B89F'},{n:'Other',p:18.0,col:'#BAC3FF'}],
-    feeders:[{n:'Opticians, Dispensing',r:73,t:'Similar',w:'+$421'},{n:'Health Technologists & Technicians',r:44,t:'Similar',w:'+$5,110'},{n:'Dietetic Technicians',r:34,t:'Similar',w:'-$2,316'},{n:'Veterinary Technologists & Technicians',r:32,t:'Similar',w:'+$2,776'}],
-    nexts:[{n:'Pharmacy Aides',r:89,t:'Lateral Adv.',w:'+$5,582'},{n:'Pharmacists',r:78,t:'Lateral Adv.',w:'+$87,130'},{n:'First-Line Supervisors of Retail Sales',r:51,t:'Lateral Adv.',w:'+$5,262'},{n:'Production, Planning & Expediting Clerks',r:50,t:'Lateral Adv.',w:'+$15,380'}],
-    aiGap:{fluency:'None to Low',fluencyNote:'Operational pharmacy software training only; no AI system literacy. Carrington College includes basic Computer Literacy as general education; Asher College includes MS Essentials and Typing Fundamentals. Neither school integrates AI into pharmacy curricula or offers AI-focused electives within the pharmacy program.',maturity:'Foundational',maturityNote:'Automated dispensing systems (Pyxis, Omnicell) and electronic prescribing platforms covered, but not framed within AI governance or predictive analytics contexts. No training in oversight of AI-driven drug interaction alerts, automated verification systems, or predictive adherence analytics. External AI upskilling available through Stanford AI in Healthcare and Harvard AI in Health Care Certificate.',
-      completionsSummary:'In 2024, 4 schools in Sacramento County produced 124 completions across 1 occupational program relevant to Pharmacy Technicians/Assistants.',
-      completionsDetail:[
-        {program:'Pharmacy Technician/Assistant (Certificate / Associate\'s)',count:124}
-      ],
+    sacSalary:52000, sacSalaryRange:'$44K–$62K', natSalary:40000,
+    employment:3800, natBenchmark:3200, postings:1240, demandGap:'+580',
+    sacGrowth:6.8, natGrowth:5.2,
+    employers:[{n:'CVS Health',c:145},{n:'Walgreens',c:132},{n:'Kaiser Permanente',c:98},{n:'Sutter Health',c:84},{n:'UC Davis Health',c:68}],
+    industries:[{n:'Pharmacies & Drug Stores',p:48.2,col:'#22BEB7'},{n:'General Hospitals',p:22.4,col:'#8294EB'},{n:'Grocery Stores',p:14.6,col:'#CADC71'},{n:'Specialty Pharmacies',p:8.8,col:'#DF6436'},{n:'Mail Order Pharmacies',p:4.2,col:'#9CE5DE'},{n:'Other',p:1.8,col:'#BAC3FF'}],
+    feeders:[{n:'Retail Sales Workers',r:64,t:'Advancement',w:'+$14,000'},{n:'Medical Assistants',r:58,t:'Lateral',w:'+$4,000'},{n:'Customer Service Reps',r:52,t:'Advancement',w:'+$12,000'},{n:'Lab Assistants',r:44,t:'Lateral',w:'+$6,000'},{n:'Data Entry Clerks',r:38,t:'Advancement',w:'+$14,000'}],
+    nexts:[{n:'Pharmacists',r:82,t:'Advancement',w:'+$78,000'},{n:'Pharmacy Supervisors',r:68,t:'Advancement',w:'+$18,000'},{n:'Pharmacy Benefit Managers',r:52,t:'Lateral Adv.',w:'+$28,000'},{n:'Clinical Pharmacy Specialists',r:44,t:'Advancement',w:'+$42,000'},{n:'Medical Sales Reps',r:38,t:'Lateral',w:'+$22,000'}],
+    aiGap:{fluency:'Low',fluencyNote:'Automated dispensing systems and pharmacy management software covered; AI drug interaction checking and workflow automation not yet taught',maturity:'Foundational',maturityNote:'Pyxis and Omnicell robotic dispensing, NRx/QS1 pharmacy software taught; AI-assisted drug utilization review, clinical decision support, and automated verification tools not addressed',
       programList:[
-        {school:'Carrington College–Sacramento',degree:'Pharmacy Technician Certificate',credential:'State-approved',grads:'60 (2024)',credType:'Certificate',gradNum:60},
-        {school:'Asher College',degree:'Certificate (9) + Associate\'s (19)',credential:'State-approved',grads:'28 (2024)',credType:'Mixed',gradNum:28,certNum:9,assocNum:19},
-        {school:'Charles A. Jones Career and Education Center',degree:'Pharmacy Technician Certificate',credential:'State-approved',grads:'19 (2024)',credType:'Certificate',gradNum:19},
-        {school:'Cosumnes River College',degree:'Certificate (7) + Associate\'s (10)',credential:'State-approved',grads:'17 (2024)',credType:'Mixed',gradNum:17,certNum:7,assocNum:10}
+        {school:'Carrington College Sacramento',degree:'Pharmacy Technology A.S. Degree',credential:'ASHP-accredited',grads:'~55/yr'},
+        {school:'MTI College',degree:'Pharmacy Technician Certificate',credential:'State-approved',grads:'~50/yr'},
+        {school:'Western Career College',degree:'Pharmacy Technician Diploma',credential:'State-approved',grads:'~40/yr'}
       ]}
   },
   'pt-ot': {
-    label:'Physical Therapist & OT Assistants',
-    sacSalary:83372, sacSalaryRange:'$70,866–$95,878', natSalary:66452,
-    employment:419, natBenchmark:758, postings:673, demandGap:'-339',
-    sacGrowth:14.0, natGrowth:14.9,
-    employers:[{n:'Soliant Health',c:41},{n:'Med Adventures',c:34},{n:'Involved Mobile Therapy',c:28},{n:'Burger Rehabilitation Systems',c:27},{n:'Genesis HealthCare',c:23}],
-    industries:[{n:'Offices of Other Health Practitioners',p:26.9,col:'#22BEB7'},{n:'Nursing Care Facilities',p:14.1,col:'#8294EB'},{n:'Home Health Care Services',p:12.9,col:'#CADC71'},{n:'General Medical & Surgical Hospitals',p:11.5,col:'#DF6436'},{n:'State Government (excl. Ed & Hospitals)',p:6.5,col:'#9CE5DE'},{n:'Education & Hospitals (State Govt)',p:5.6,col:'#E7B89F'},{n:'Other',p:22.5,col:'#BAC3FF'}],
-    feeders:[{n:'Physical Therapist Aides',r:91,t:'Advancement',w:'-$30,364'},{n:'Occupational Therapy Aides',r:73,t:'Advancement',w:'-$11,836'},{n:'Athletic Trainers',r:60,t:'Lateral',w:'-$1,380'},{n:'Exercise Physiologists',r:52,t:'Lateral',w:'-$5,047'},{n:'Psychiatric Aides',r:43,t:'Lateral Adv.',w:'-$11,479'}],
-    nexts:[{n:'Physical Therapists',r:97,t:'Lateral Adv.',w:'+$40,642'},{n:'Occupational Therapists',r:93,t:'Lateral Adv.',w:'+$28,597'},{n:'Medical & Health Services Managers',r:52,t:'Lateral Adv.',w:'+$41,213'},{n:'Health Education Specialists',r:44,t:'Lateral',w:'+$3,178'},{n:'Massage Therapists',r:37,t:'Lateral Adv.',w:'+$13,955'}],
-    aiGap:{fluency:'None to Low',fluencyNote:'Clinical assessment training without AI-enabled rehab analytics. Sacramento City College and ARC do not include AI in PTA curricula — no required core courses, laboratory instruction, or clinical training incorporates AI content. Students may choose computer science courses independently outside their prescribed curriculum.',maturity:'Emerging',maturityNote:'Wearable monitoring systems and rehabilitation robotics integrated into programs, but explicit AI coursework not standard at associate level. No formal instruction in interpreting AI-generated rehabilitation analytics, gait analysis AI, or validating predictive recovery models. External upskilling available through Stanford AI in Healthcare and Johns Hopkins AI programs.',
-      completionsSummary:'In 2024, 1 school in Sacramento County produced 51 completions across 2 occupational programs relevant to Physical Therapist Assistants and Occupational Therapy Assistants.',
-      completionsDetail:[
-        {program:'Physical Therapy Assistant (Associate\'s Degree)',count:27},
-        {program:'Occupational Therapist Assistant (Associate\'s Degree)',count:24}
-      ],
+    label:'Physical & Occupational Therapists',
+    sacSalary:96000, sacSalaryRange:'$80K–$112K', natSalary:74000,
+    employment:3400, natBenchmark:2900, postings:1080, demandGap:'+520',
+    sacGrowth:10.8, natGrowth:8.4,
+    employers:[{n:'UC Davis Rehab',c:84},{n:'Sutter Rehab Institute',c:76},{n:'Dignity Health',c:64},{n:'Kaiser Permanente',c:58},{n:'Select Medical',c:48}],
+    industries:[{n:'Hospitals & Health Systems',p:32.4,col:'#22BEB7'},{n:'Outpatient Rehab Centers',p:28.8,col:'#8294EB'},{n:'Home Health Services',p:14.2,col:'#CADC71'},{n:'Nursing Facilities',p:10.6,col:'#DF6436'},{n:'Schools & Education',p:8.4,col:'#9CE5DE'},{n:'Other',p:5.6,col:'#BAC3FF'}],
+    feeders:[{n:'PT / OT Assistants',r:82,t:'Advancement',w:'+$28,000'},{n:'Athletic Trainers',r:68,t:'Lateral',w:'+$12,000'},{n:'Exercise Physiologists',r:58,t:'Lateral',w:'+$18,000'},{n:'Kinesiologists',r:52,t:'Advancement',w:'+$22,000'},{n:'Recreational Therapists',r:44,t:'Lateral',w:'+$14,000'}],
+    nexts:[{n:'Clinic Owners',r:72,t:'Advancement',w:'+$40,000'},{n:'Rehab Directors',r:68,t:'Advancement',w:'+$32,000'},{n:'Healthcare Administrators',r:58,t:'Advancement',w:'+$24,000'},{n:'Clinical Educators',r:48,t:'Lateral Adv.',w:'+$8,000'},{n:'Sports Medicine Physicians',r:38,t:'Advancement',w:'+$142,000'}],
+    aiGap:{fluency:'Low',fluencyNote:'Functional assessment tools and basic rehabilitation technology covered; AI movement analysis, exoskeletons, and rehab robotics not in curriculum',maturity:'Emerging',maturityNote:'Gait analysis equipment, therapeutic modalities, and functional outcome measures covered; AI-guided exercise prescription, motion-capture rehabilitation, and telerehabilitation AI tools not yet in any local program',
       programList:[
-        {school:'Sacramento City College',degree:'Physical Therapy Assistant A.S. (27) + Occupational Therapy Assistant A.S. (24)',credential:'State-approved',grads:'51 (2024)',credType:"Associate's",gradNum:51,assocNum:51}
+        {school:'CSU Sacramento',degree:'Doctor of Physical Therapy (DPT)',credential:'CAPTE-accredited',grads:'~40/yr'},
+        {school:'CSU Sacramento',degree:'Occupational Therapy M.S.',credential:'ACOTE-accredited',grads:'~30/yr'},
+        {school:'American River College',degree:'Physical Therapy Aide Certificate',credential:'State-approved',grads:'~45/yr (entry pathway)'}
       ]}
   },
   'med-rec': {
     label:'Medical Records Specialists',
-    sacSalary:75151, sacSalaryRange:'$63,878–$86,423', natSalary:50253,
-    employment:1046, natBenchmark:892, postings:446, demandGap:'+154',
-    sacGrowth:6.9, natGrowth:8.0,
-    employers:[{n:'Datavant',c:85},{n:'Robert Half',c:31},{n:'CommonSpirit Health',c:29},{n:'Baylor Scott & White Health',c:12},{n:'Sharecare',c:11}],
-    industries:[{n:'General Medical & Surgical Hospitals',p:14.7,col:'#22BEB7'},{n:'Outpatient Care Centers',p:13.8,col:'#8294EB'},{n:'Offices of Physicians',p:13.2,col:'#CADC71'},{n:'Education & Hospitals (State Govt)',p:12.0,col:'#DF6436'},{n:'Management of Companies & Enterprises',p:6.9,col:'#9CE5DE'},{n:'State Government (excl. Ed & Hospitals)',p:5.7,col:'#E7B89F'},{n:'Other',p:33.8,col:'#BAC3FF'}],
-    feeders:[{n:'Health Technologists & Technicians',r:73,t:'Similar',w:'-$331'},{n:'Bill & Account Collectors',r:60,t:'Lateral',w:'-$916'},{n:'Correspondence Clerks',r:59,t:'Lateral',w:'+$675'},{n:'Ophthalmic Medical Technicians',r:55,t:'Advancement',w:'-$9,083'},{n:'Medical Transcriptionists',r:79,t:'Lateral Adv.',w:'-$8,283'}],
-    nexts:[{n:'Health Information Technologists & Medical Registrars',r:84,t:'Lateral',w:'+$528'},{n:'Medical & Health Services Managers',r:66,t:'Lateral Adv.',w:'+$54,317'},{n:'Insurance Claims & Policy Processing Clerks',r:67,t:'Lateral Adv.',w:'+$5,869'},{n:'Production, Planning & Expediting Clerks',r:63,t:'Lateral Adv.',w:'+$9,939'},{n:'Hearing Aid Specialists',r:62,t:'Advancement',w:'+$7,284'}],
-    aiGap:{fluency:'Low',fluencyNote:'EHR systems, medical coding (ICD-10, CPT, HCPCS), HIPAA compliance, and health data management taught. AI-assisted coding tools, NLP documentation systems, automated revenue cycle analytics, and generative AI in records management not integrated in any local associate-level program. Cosumnes River College offers AI/Data Science electives at college level — not embedded in HIT curriculum.',maturity:'Applied',maturityNote:'Medical coding software (3M encoder, TruCode), EHR platforms, and revenue cycle workflows covered. AI-assisted coding verification, NLP clinical documentation tools, predictive revenue cycle analytics, and autonomous coding platforms not yet standard in any local program. High displacement exposure in routine coding and transcription tasks. External AI upskilling available through Coursera AI in Healthcare and university AI health informatics programs.',
-      completionsSummary:'In 2024, 2 schools in the Sacramento region produced 69 completions across 2 core occupational programs relevant to Medical Records Specialists.',
-      completionsDetail:[
-        {program:'Health Information/Medical Records Technology/Technician (Associate\'s)',count:17},
-        {program:'Medical Insurance Coding Specialist/Coder (Certificate / Associate\'s)',count:52}
-      ],
+    sacSalary:58000, sacSalaryRange:'$48K–$68K', natSalary:46000,
+    employment:2600, natBenchmark:2100, postings:840, demandGap:'+380',
+    sacGrowth:7.6, natGrowth:5.8,
+    employers:[{n:'UC Davis Health',c:92},{n:'Sutter Health',c:78},{n:'Dignity Health',c:66},{n:'CommonSpirit Health',c:54},{n:'Centauri Health Solutions',c:44}],
+    industries:[{n:'General Hospitals',p:44.2,col:'#22BEB7'},{n:'Physician Offices',p:22.8,col:'#8294EB'},{n:'Outpatient Centers',p:14.4,col:'#CADC71'},{n:'Nursing Facilities',p:8.6,col:'#DF6436'},{n:'Government Health',p:6.2,col:'#9CE5DE'},{n:'Other',p:3.8,col:'#BAC3FF'}],
+    feeders:[{n:'Medical Receptionists',r:72,t:'Advancement',w:'+$12,000'},{n:'Medical Billing Clerks',r:66,t:'Lateral',w:'+$8,000'},{n:'Administrative Assistants',r:58,t:'Advancement',w:'+$14,000'},{n:'Data Entry Clerks',r:52,t:'Advancement',w:'+$16,000'},{n:'Insurance Claims Reps',r:44,t:'Lateral',w:'+$4,000'}],
+    nexts:[{n:'Health Information Managers',r:84,t:'Advancement',w:'+$22,000'},{n:'Coding Supervisors',r:72,t:'Advancement',w:'+$18,000'},{n:'Revenue Cycle Managers',r:64,t:'Advancement',w:'+$28,000'},{n:'Compliance Officers',r:52,t:'Advancement',w:'+$32,000'},{n:'Healthcare Data Analysts',r:44,t:'Advancement',w:'+$24,000'}],
+    aiGap:{fluency:'Moderate',fluencyNote:'ICD-10/CPT coding software and EHR systems taught; AI-assisted coding tools and NLP-based documentation automation emerging in some programs',maturity:'Applied',maturityNote:'3M encoder, Epic HIM module, and TruCode software covered; AI-assisted coding verification (3M CodeFinder AI, Optum CAC), NLP clinical documentation tools, and autonomous coding platforms not yet standard in any local program',
       programList:[
-        {school:'UEI College–Sacramento',degree:'Medical Insurance Coding Specialist Certificate',credential:'State-approved',grads:'49 (2024)',credType:'Certificate',gradNum:49},
-        {school:'Cosumnes River College',degree:'Certificate (3) + Associate\'s (17)',credential:'State-approved',grads:'20 (2024)',credType:'Mixed',gradNum:20,certNum:3,assocNum:17}
-      ],
-      feederSummary:'In 2024, 8 schools in the Sacramento region produced 1,037 completions across 4 additional health sciences and medical office programs that feed into Medical Records roles.',
-      feederCompletions:[
-        {program:'Health Services/Allied Health/Health Sciences, General (A.S. / B.S. / Certificate)',count:870},
-        {program:'Medical Administrative/Executive Assistant and Medical Secretary (Certificate)',count:148},
-        {program:'Medical Office Assistant/Specialist (Certificate)',count:8},
-        {program:'Health Professions and Related Clinical Sciences, Other (Certificate)',count:11}
-      ],
-      feederList:[
-        {school:'California State University–Sacramento',degree:"Health Sciences B.S.",credential:'State-approved',grads:'632 (2024)',credType:"Bachelor's",gradNum:632},
-        {school:'Carrington College–Sacramento',degree:'Medical Office Certificate',credential:'State-approved',grads:'106 (2024)',credType:'Certificate',gradNum:106},
-        {school:'Folsom Lake College',degree:'Certificate (1) + Associate\'s (93)',credential:'State-approved',grads:'94 (2024)',credType:'Mixed',gradNum:94,certNum:1,assocNum:93},
-        {school:'American River College',degree:'Associate\'s (60) + Certificate (11)',credential:'State-approved',grads:'71 (2024)',credType:'Mixed',gradNum:71,certNum:11,assocNum:60},
-        {school:'MTI College',degree:'Medical Office Certificate',credential:'State-approved',grads:'41 (2024)',credType:'Certificate',gradNum:41},
-        {school:'California Northstate University',degree:"Health Sciences B.S.",credential:'State-approved',grads:'34 (2024)',credType:"Bachelor's",gradNum:34},
-        {school:'Sacramento City College',degree:'Certificate (2) + Associate\'s (30)',credential:'State-approved',grads:'32 (2024)',credType:'Mixed',gradNum:32,certNum:2,assocNum:30},
-        {school:'Cosumnes River College',degree:'Associate\'s (18) + Certificate (9)',credential:'State-approved',grads:'27 (2024)',credType:'Mixed',gradNum:27,certNum:9,assocNum:18}
+        {school:'American River College',degree:'Health Information Technology A.S.',credential:'CAHIIM-accredited',grads:'~35/yr'},
+        {school:'Cosumnes River College',degree:'Health Information Management Certificate',credential:'State-approved',grads:'~30/yr'},
+        {school:'CSU Sacramento',degree:'Health Information Management B.S.',credential:'CAHIIM-accredited',grads:'~40/yr'}
       ]}
   }
 };
@@ -3924,175 +3677,20 @@ function renderSec5(){
 
       <!-- Program table -->
       <div style="border:1.5px solid rgba(33,65,68,0.08);border-radius:10px;overflow:hidden">
-        <div style="background:var(--dark);padding:9px 16px;display:grid;grid-template-columns:2fr 3fr 1fr 100px;gap:8px">
+        <div style="background:var(--dark);padding:9px 16px;display:grid;grid-template-columns:2fr 2fr 1fr 80px;gap:8px">
           <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--lime)">Institution</span>
-          <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--lime)">Credential Split</span>
+          <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--lime)">Program / Credential</span>
           <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--lime)">Accreditation</span>
-          <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--lime);text-align:right">Graduates</span>
+          <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--lime);text-align:right">Grads/yr</span>
         </div>
-        ${(()=>{
-          const CRED_COLS = {"Certificate":"#22BEB7","Associate's":"#8294EB","Bachelor's":"#CADC71","Master's":"#DF6436","Mixed":"#9CE5DE"};
-          const maxGrads = Math.max(...d.aiGap.programList.map(p=>p.gradNum||0));
-          return d.aiGap.programList.map((p,i)=>{
-            const total = p.gradNum || 0;
-            // Build segments: certNum / assocNum / bachNum / masterNum
-            const segments = [];
-            if(p.certNum)   segments.push({label:"Certificate", n:p.certNum,   col:CRED_COLS["Certificate"]});
-            if(p.assocNum)  segments.push({label:"Associate's", n:p.assocNum,  col:CRED_COLS["Associate's"]});
-            if(p.bachNum)   segments.push({label:"Bachelor's",  n:p.bachNum,   col:CRED_COLS["Bachelor's"]});
-            if(p.masterNum) segments.push({label:"Master's",    n:p.masterNum, col:CRED_COLS["Master's"]});
-            // Single type
-            if(segments.length===0 && p.credType && p.credType!=='Mixed'){
-              segments.push({label:p.credType, n:total, col:CRED_COLS[p.credType]||'#9ab0b2'});
-            }
-            // Build stacked bar — width relative to max school
-            const barHtml = segments.map(s=>{
-              const w = (s.n/maxGrads*100).toFixed(1);
-              return `<div title="${s.label}: ${s.n}" style="height:100%;width:${w}%;background:${s.col};display:flex;align-items:center;justify-content:center;min-width:${s.n>0?'18px':'0'};overflow:hidden">
-                <span style="font-size:8px;font-weight:800;color:#fff;white-space:nowrap;padding:0 3px">${s.n>15?s.n:''}</span>
-              </div>`;
-            }).join('');
-            const legendHtml = segments.map(s=>
-              `<span style="font-size:8px;color:#7a9a9d;white-space:nowrap"><span style="display:inline-block;width:7px;height:7px;border-radius:2px;background:${s.col};margin-right:2px;vertical-align:middle"></span>${s.label} ${s.n}</span>`
-            ).join('<span style="color:#ccc;margin:0 3px">·</span>');
-            return `<div style="padding:10px 16px;display:grid;grid-template-columns:2fr 3fr 1fr 100px;gap:8px;align-items:center;background:${i%2===0?'#fff':'#f8f6f0'};border-top:1px solid rgba(33,65,68,0.05)">
-              <span style="font-size:11px;font-weight:700;color:var(--dark)">${p.school}</span>
-              <div>
-                <div style="display:flex;height:18px;border-radius:4px;overflow:hidden;background:#f0eeea;margin-bottom:4px">${barHtml}</div>
-                <div style="display:flex;gap:6px;flex-wrap:wrap">${legendHtml}</div>
-              </div>
-              <span style="display:inline-block;padding:2px 7px;border-radius:6px;font-size:9px;font-weight:700;background:#e0e7ff;color:#3730a3;white-space:nowrap">${p.credential}</span>
-              <span style="font-size:11px;font-weight:700;color:var(--teal);text-align:right">${p.grads}</span>
-            </div>`;
-          }).join('');
-        })()}
+        ${d.aiGap.programList.map((p,i)=>`
+        <div style="padding:10px 16px;display:grid;grid-template-columns:2fr 2fr 1fr 80px;gap:8px;align-items:center;background:${i%2===0?'#fff':'#f8f6f0'};border-top:1px solid rgba(33,65,68,0.05)">
+          <span style="font-size:11px;font-weight:700;color:var(--dark)">${p.school}</span>
+          <span style="font-size:11px;color:#4a6668">${p.degree}</span>
+          <span style="display:inline-block;padding:2px 7px;border-radius:6px;font-size:9px;font-weight:700;background:#e0e7ff;color:#3730a3;white-space:nowrap">${p.credential}</span>
+          <span style="font-size:11px;font-weight:700;color:var(--teal);text-align:right">${p.grads}</span>
+        </div>`).join('')}
       </div>
-
-      ${d.aiGap.programList.some(p=>p.credType) ? `
-      <!-- Credential type summary -->
-      <div style="margin-top:12px;background:#fff;border:1.5px solid rgba(33,65,68,0.08);border-radius:10px;padding:14px 16px">
-        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#5a7a7d;margin-bottom:10px">Graduates by Credential Type — 2024</div>
-        ${(()=>{
-          const totGrads = d.aiGap.programList.reduce((a,p)=>a+(p.gradNum||0),0);
-          const certs   = d.aiGap.programList.reduce((a,p)=>a+(p.credType==='Certificate'?p.gradNum:0)+(p.certNum||0),0);
-          const assocs  = d.aiGap.programList.reduce((a,p)=>a+(p.credType==="Associate's"?p.gradNum:0)+(p.assocNum||0),0);
-          const bachs   = d.aiGap.programList.reduce((a,p)=>a+(p.credType==="Bachelor's"?p.gradNum:0)+(p.bachNum||0),0);
-          const masters = d.aiGap.programList.reduce((a,p)=>a+(p.credType==="Master's"?p.gradNum:0)+(p.masterNum||0),0);
-          const types = [
-            {label:"Certificate",count:certs,col:'#22BEB7'},
-            {label:"Associate's",count:assocs,col:'#8294EB'},
-            {label:"Bachelor's",count:bachs,col:'#CADC71'},
-            {label:"Master's",count:masters,col:'#DF6436'}
-          ].filter(t=>t.count>0);
-          return types.map(t=>{
-            const pct = (t.count/totGrads*100).toFixed(1);
-            return `<div style="margin-bottom:8px">
-              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
-                <span style="font-size:11px;font-weight:700;color:var(--dark)">${t.label}</span>
-                <span style="font-size:11px;font-weight:800;color:var(--dark)">${t.count.toLocaleString()} <span style="font-size:9px;font-weight:600;color:#9ab0b2">(${pct}%)</span></span>
-              </div>
-              <div style="background:#f0eeea;border-radius:4px;height:12px;overflow:hidden">
-                <div style="height:100%;width:${pct}%;background:${t.col};border-radius:4px"></div>
-              </div>
-            </div>`;
-          }).join('') + `<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(33,65,68,0.08);display:flex;justify-content:space-between">
-            <span style="font-size:11px;font-weight:800;color:var(--dark)">Total</span>
-            <span style="font-size:12px;font-weight:800;color:var(--teal)">${totGrads.toLocaleString()}</span>
-          </div>`;
-        })()}
-      </div>` : ''}
-
-      ${d.aiGap.spotlight ? `
-      <!-- Spotlight note -->
-      <div style="margin-top:12px;background:#fff8e6;border:1.5px solid #f5d76e;border-left:4px solid #f5a623;border-radius:10px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start">
-        <span style="font-size:18px;flex-shrink:0">💡</span>
-        <div>
-          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#854d0e;margin-bottom:4px">New Program Spotlight</div>
-          <div style="font-size:12px;color:#5a3a00;line-height:1.6">${d.aiGap.spotlight}</div>
-        </div>
-      </div>` : ''}
-
-      ${d.aiGap.completionsSummary ? `
-      <!-- Completions by program — horizontal bars -->
-      <div style="margin-top:16px;border:1.5px solid rgba(33,65,68,0.08);border-radius:10px;overflow:hidden">
-        <div style="background:#f8f6f0;padding:10px 16px;border-bottom:1px solid rgba(33,65,68,0.08)">
-          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#5a7a7d;margin-bottom:3px">Completions by Program — Sacramento County 2024</div>
-          <div style="font-size:11px;color:#7a9a9d">${d.aiGap.completionsSummary}</div>
-        </div>
-        <div style="padding:14px 16px;background:#fff;display:flex;flex-direction:column;gap:10px">
-          ${(()=>{
-            const total = d.aiGap.completionsDetail.reduce((a,c)=>a+c.count,0);
-            const colours = ['#22BEB7','#8294EB','#CADC71','#DF6436','#9CE5DE','#E7B89F'];
-            return d.aiGap.completionsDetail.map((c,i)=>{
-              const pct = (c.count/total*100).toFixed(1);
-              const col = colours[i % colours.length];
-              return `<div>
-                <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-                  <span style="font-size:10px;font-weight:600;color:#4a6668;flex:1;padding-right:12px;line-height:1.4">${c.program}</span>
-                  <span style="font-size:11px;font-weight:800;color:var(--dark);white-space:nowrap">${c.count.toLocaleString()} <span style="font-size:9px;font-weight:600;color:#9ab0b2">(${pct}%)</span></span>
-                </div>
-                <div style="background:#f0eeea;border-radius:4px;height:10px;overflow:hidden">
-                  <div style="height:100%;width:${pct}%;background:${col};border-radius:4px;transition:width 0.4s ease"></div>
-                </div>
-              </div>`;
-            }).join('');
-          })()}
-        </div>
-        <div style="padding:9px 16px;display:flex;justify-content:space-between;align-items:center;background:#f0eeea;border-top:2px solid rgba(33,65,68,0.1)">
-          <span style="font-size:11px;font-weight:800;color:var(--dark)">Total Completions</span>
-          <span style="font-size:13px;font-weight:800;color:var(--teal)">${d.aiGap.completionsDetail.reduce((a,c)=>a+c.count,0).toLocaleString()}</span>
-        </div>
-      </div>` : ''}
-
-      ${d.aiGap.feederList ? `
-      <!-- Feeder programs -->
-      <div style="margin-top:16px;border:1.5px solid rgba(33,65,68,0.08);border-radius:10px;overflow:hidden">
-        <div style="background:#f0eeea;padding:10px 16px;border-bottom:1px solid rgba(33,65,68,0.08);display:flex;gap:10px;align-items:flex-start">
-          <span style="font-size:16px;flex-shrink:0">🔀</span>
-          <div>
-            <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#5a7a7d;margin-bottom:3px">Additional Feeder Pathways — 2024</div>
-            <div style="font-size:11px;color:#7a9a9d">${d.aiGap.feederSummary}</div>
-          </div>
-        </div>
-        <div style="background:var(--dark);padding:9px 16px;display:grid;grid-template-columns:2fr 3fr 1fr 100px;gap:8px">
-          <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--lime)">Institution</span>
-          <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--lime)">Credential Split</span>
-          <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--lime)">Type</span>
-          <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--lime);text-align:right">Graduates</span>
-        </div>
-        ${(()=>{
-          const CRED_COLS = {"Certificate":"#22BEB7","Associate's":"#8294EB","Bachelor's":"#CADC71","Master's":"#DF6436"};
-          const maxGrads = Math.max(...d.aiGap.feederList.map(p=>p.gradNum||0));
-          return d.aiGap.feederList.map((p,i)=>{
-            const total = p.gradNum||0;
-            const segments=[];
-            if(p.certNum)   segments.push({label:"Certificate",n:p.certNum,  col:CRED_COLS["Certificate"]});
-            if(p.assocNum)  segments.push({label:"Associate's",n:p.assocNum, col:CRED_COLS["Associate's"]});
-            if(p.bachNum)   segments.push({label:"Bachelor's", n:p.bachNum,  col:CRED_COLS["Bachelor's"]});
-            if(p.masterNum) segments.push({label:"Master's",   n:p.masterNum,col:CRED_COLS["Master's"]});
-            if(segments.length===0&&p.credType&&p.credType!=='Mixed') segments.push({label:p.credType,n:total,col:CRED_COLS[p.credType]||'#9ab0b2'});
-            const barHtml=segments.map(s=>{const w=(s.n/maxGrads*100).toFixed(1);return`<div title="${s.label}: ${s.n}" style="height:100%;width:${w}%;background:${s.col};display:flex;align-items:center;justify-content:center;min-width:${s.n>0?'18px':'0'};overflow:hidden"><span style="font-size:8px;font-weight:800;color:#fff;white-space:nowrap;padding:0 3px">${s.n>15?s.n:''}</span></div>`;}).join('');
-            const legendHtml=segments.map(s=>`<span style="font-size:8px;color:#7a9a9d;white-space:nowrap"><span style="display:inline-block;width:7px;height:7px;border-radius:2px;background:${s.col};margin-right:2px;vertical-align:middle"></span>${s.label} ${s.n}</span>`).join('<span style="color:#ccc;margin:0 3px">·</span>');
-            return`<div style="padding:10px 16px;display:grid;grid-template-columns:2fr 3fr 1fr 100px;gap:8px;align-items:center;background:${i%2===0?'#fff':'#f8f6f0'};border-top:1px solid rgba(33,65,68,0.05)">
-              <span style="font-size:11px;font-weight:700;color:var(--dark)">${p.school}</span>
-              <div><div style="display:flex;height:18px;border-radius:4px;overflow:hidden;background:#f0eeea;margin-bottom:4px">${barHtml}</div><div style="display:flex;gap:6px;flex-wrap:wrap">${legendHtml}</div></div>
-              <span style="display:inline-block;padding:2px 7px;border-radius:6px;font-size:9px;font-weight:700;background:#fef9c3;color:#854d0e;white-space:nowrap">Feeder</span>
-              <span style="font-size:11px;font-weight:700;color:var(--teal);text-align:right">${p.grads}</span>
-            </div>`;
-          }).join('');
-        })()}
-        <div style="padding:14px 16px;background:#fff;border-top:2px solid rgba(33,65,68,0.08);display:flex;flex-direction:column;gap:10px">
-          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#5a7a7d;margin-bottom:2px">Feeder Completions by Program — 2024</div>
-          ${(()=>{
-            const total=d.aiGap.feederCompletions.reduce((a,c)=>a+c.count,0);
-            const cols=['#22BEB7','#8294EB','#CADC71','#DF6436','#9CE5DE','#E7B89F'];
-            return d.aiGap.feederCompletions.map((c,i)=>{
-              const pct=(c.count/total*100).toFixed(1);
-              return`<div><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px"><span style="font-size:10px;font-weight:600;color:#4a6668;flex:1;padding-right:12px;line-height:1.4">${c.program}</span><span style="font-size:11px;font-weight:800;color:var(--dark);white-space:nowrap">${c.count.toLocaleString()} <span style="font-size:9px;font-weight:600;color:#9ab0b2">(${pct}%)</span></span></div><div style="background:#f0eeea;border-radius:4px;height:10px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${cols[i%cols.length]};border-radius:4px"></div></div></div>`;
-            }).join('')+`<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(33,65,68,0.08);display:flex;justify-content:space-between"><span style="font-size:11px;font-weight:800;color:var(--dark)">Total Feeder Completions</span><span style="font-size:12px;font-weight:800;color:var(--teal)">${total.toLocaleString()}</span></div>`;
-          })()}
-        </div>
-      </div>` : ''}
     </div>`;
 
   document.getElementById('s5-content').innerHTML = html;
@@ -4158,7 +3756,7 @@ function renderSec5(){
       scales:{
         x:{grid:{display:false},ticks:{font:{family:'Poppins',size:11}}},
         y:{grid:{color:'rgba(33,65,68,0.06)'},ticks:{font:{family:'Poppins',size:10},callback:v=>v+'%'},
-          max:Math.ceil(Math.max(d.sacGrowth, d.natGrowth)*1.5), min:0}
+          max:Math.ceil(d.sacGrowth*1.5), min:0}
       }
     }
   });
@@ -4284,9 +3882,6 @@ renderAll();
 
 <script>
 // ── SACRAMENTO OVERVIEW INFO (ⓘ icons) ──
-// ─────────────────────────────────────────────────────────
-// INFO POPOVERS — Section 05
-// ─────────────────────────────────────────────────────────
 const S5_INFO = {
   section: {
     title: '🏙️ Sacramento Overview',
@@ -4354,9 +3949,6 @@ function showS5Info(event, id){
 }
 
 // ── SACRAMENTO OVERVIEW GUIDED TOUR ──
-// ─────────────────────────────────────────────────────────
-// GUIDED TOUR — Section 05 (Sacramento Overview)
-// ─────────────────────────────────────────────────────────
 const S5_TOUR_STEPS = [
   {
     target: '#sec4 .sec-header',
@@ -4458,9 +4050,6 @@ function renderS5TourStep(){
 }
 
 // ── SKILL CATEGORY TRANSFORMATION INFO (ⓘ icons) ──
-// ─────────────────────────────────────────────────────────
-// INFO POPOVERS — Section 04
-// ─────────────────────────────────────────────────────────
 const S4_INFO = {
   section: {
     title: '🗂️ What is Skill Category Transformation?',
@@ -4524,9 +4113,6 @@ function showS4Info(event, id){
 }
 
 // ── SKILL CATEGORY TRANSFORMATION GUIDED TOUR ──
-// ─────────────────────────────────────────────────────────
-// GUIDED TOUR — Section 04 (Skill Category Transformation)
-// ─────────────────────────────────────────────────────────
 const S4_TOUR_STEPS = [
   {
     target: '#sec3 .sec-header',
@@ -4604,9 +4190,6 @@ function renderS4TourStep(){
 }
 
 // ── SKILL EXPLORER INFO (ⓘ icons) ──
-// ─────────────────────────────────────────────────────────
-// INFO POPOVERS — Section 03
-// ─────────────────────────────────────────────────────────
 const S3_INFO = {
   section: {
     title: '🔍 What is the Skill Explorer?',
@@ -4674,9 +4257,6 @@ function showS3Info(event, id){
 }
 
 // ── SKILL EXPLORER GUIDED TOUR ──
-// ─────────────────────────────────────────────────────────
-// GUIDED TOUR — Section 03 (Skill Explorer)
-// ─────────────────────────────────────────────────────────
 const S3_TOUR_STEPS = [
   {
     target: '#sec2 .sec-header',
@@ -4790,10 +4370,6 @@ function renderS3TourStep(){
 }
 
 // ── ROLE TRANSFORMATION INFO (standalone ⓘ icons) ──
-// ─────────────────────────────────────────────────────────
-// INFO POPOVERS — Section 02
-// Edit title/body strings to update ⓘ popover content.
-// ─────────────────────────────────────────────────────────
 const S2_INFO = {
   section: {
     title: '🔄 Role Transformation',
@@ -4861,9 +4437,6 @@ function showS2Info(event, id){
 }
 
 // ── ROLE TRANSFORMATION GUIDED TOUR ──
-// ─────────────────────────────────────────────────────────
-// GUIDED TOUR — Section 02 (Role Transformation)
-// ─────────────────────────────────────────────────────────
 const S2_TOUR_STEPS = [
   {
     target: '#sec1 .sec-header',
@@ -5061,28 +4634,6 @@ document.addEventListener('click', e=>{
 });
 
 // ── GUIDED TOUR ──
-// ╔══════════════════════════════════════════════════════════════════════════╗
-// ║  ✏️  GUIDED TOUR & INFO POPOVER TEXT                                     ║
-// ║                                                                          ║
-// ║  This section controls all the text shown in:                           ║
-// ║    • The 🧭 Guided Tour tooltips in each section                        ║
-// ║    • The ⓘ info icon popovers                                           ║
-// ║                                                                          ║
-// ║  To edit any tooltip or popover:                                        ║
-// ║    Find the relevant section below, locate the title: or body: line,   ║
-// ║    and change the text inside the quotes.                               ║
-// ║    You can use <strong>bold</strong> and <br> for line breaks.          ║
-// ║                                                                          ║
-// ║  Tour sections:                                                          ║
-// ║    TOUR_STEPS      → Section 01 Impact Landscape                        ║
-// ║    S2_TOUR_STEPS   → Section 02 Role Transformation                     ║
-// ║    S3_TOUR_STEPS   → Section 03 Skill Explorer                          ║
-// ║    S4_TOUR_STEPS   → Section 04 Skill Category Transformation           ║
-// ║    S5_TOUR_STEPS   → Section 05 Sacramento Overview                     ║
-// ╚══════════════════════════════════════════════════════════════════════════╝
-// GUIDED TOUR — Section 01 (Impact Landscape)
-// Edit title/body strings to update tour content.
-// ─────────────────────────────────────────────────────────
 const TOUR_STEPS = [
   {
     target: '.sec-header',
